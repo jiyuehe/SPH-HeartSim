@@ -15,8 +15,8 @@ using namespace SPH;
 
 // settings
 // ------------------------------------------------------------
-int geometry_flag = 1; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
-int particle_relaxation_flag = 0; // 1: do relaxation. 0: run simulation
+int geometry_flag = 2; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
+int particle_relaxation_flag = 1; // 1: do relaxation. 0: run simulation
 Real end_time = 150; // simulation time, unit: ms
 // ------------------------------------------------------------
 
