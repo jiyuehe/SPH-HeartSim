@@ -47,6 +47,12 @@ make -j$(nproc)
 sudo make install  
 export CMAKE_PREFIX_PATH=/usr/local  
 
+## Ubuntu
+sudo apt install libsimbody-dev
+sudo apt install libeigen3-dev
+sudo apt install libtbb-dev
+sudo apt install libboost-all-dev
+
 ## MacOS
 brew install eigen  
 brew install tbb  
