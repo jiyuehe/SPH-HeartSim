@@ -10,17 +10,7 @@ Open terminal in folder /electromechanical-heart-simulator
 mkdir build && cd build  
 cmake .. -DCMAKE_BUILD_TYPE=Release  
 (NOTE: if no -DCMAKE_BUILD_TYPE=Release at the end, the compiled code runs much slower because it will be in debug mode)  
-
-At top of /sim/excitation-contraction.cpp, set int particle_relaxation_flag = 1;  
 make -j$(nproc)  
-
-Then open terminal in folder /electromechanical-heart-simulator/build/sim/bin/  
-./sim  
-
-At top of /sim/excitation-contraction.cpp, set int particle_relaxation_flag = 0;  
-Open terminal in the /electromechanical-heart-simulator/build folder  
-make -j$(nproc)  
-
 Then open terminal in folder /electromechanical-heart-simulator/build/sim/bin/  
 ./sim  
 
