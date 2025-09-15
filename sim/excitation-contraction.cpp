@@ -337,76 +337,74 @@ int main(int ac, char *av[])
     //----------------------------------------------------------------------
     int ite = 0;
 
+    // {
+    SolidBody herat_model(sph_system, makeShared<Heart>("HeartModel"));
+
+    herat_model.defineBodyLevelSetShape()->correctLevelSetSign()->writeLevelSet(sph_system);
+    herat_model.defineClosure<LocallyOrthotropicMuscle, IsotropicDiffusion>(
+        ConstructArgs(rho0_s, bulk_modulus, fiber_direction, sheet_direction, a0, b0),
+        ConstructArgs(diffusion_species_name, diffusion_coeff));
+    herat_model.generateParticles<BaseParticles, Lattice>();
+    
+    // topology 
+    InnerRelation herat_model_inner(herat_model);
+    using namespace relax_dynamics;
+    SimpleDynamics<RandomizeParticlePosition> random_particles(herat_model);
+    RelaxationStepInner relaxation_step_inner(herat_model_inner);
+
+    // Relaxation output
+    BodyStatesRecordingToVtp write_herat_model_state_to_vtp({herat_model});
+    ReloadParticleIO write_particle_reload_files(herat_model);
+    write_particle_reload_files.addToReload<Vec3d>(herat_model, "Fiber");
+    write_particle_reload_files.addToReload<Vec3d>(herat_model, "Sheet");
+
+    // Physics relaxation starts here.
+    random_particles.exec(0.25);
+    relaxation_step_inner.SurfaceBounding().exec();
+    write_herat_model_state_to_vtp.writeToFile(0.0);
+
+    // From here the time stepping begins.        
+    int relax_step = 1000; // original: 1000. NOTE: if the step is not enough, the simulation will result NaN after some time)
+    while (ite < relax_step)
     {
-        SolidBody herat_model(sph_system, makeShared<Heart>("HeartModel"));
-
-        herat_model.defineBodyLevelSetShape()->correctLevelSetSign()->writeLevelSet(sph_system);
-        herat_model.defineClosure<LocallyOrthotropicMuscle, IsotropicDiffusion>(
-            ConstructArgs(rho0_s, bulk_modulus, fiber_direction, sheet_direction, a0, b0),
-            ConstructArgs(diffusion_species_name, diffusion_coeff));
-        herat_model.generateParticles<BaseParticles, Lattice>();
-        
-        // topology 
-        InnerRelation herat_model_inner(herat_model);
-        using namespace relax_dynamics;
-        SimpleDynamics<RandomizeParticlePosition> random_particles(herat_model);
-        RelaxationStepInner relaxation_step_inner(herat_model_inner);
-
-        // Relaxation output
-        BodyStatesRecordingToVtp write_herat_model_state_to_vtp({herat_model});
-        ReloadParticleIO write_particle_reload_files(herat_model);
-        write_particle_reload_files.addToReload<Vec3d>(herat_model, "Fiber");
-        write_particle_reload_files.addToReload<Vec3d>(herat_model, "Sheet");
-
-        // Physics relaxation starts here.
-        random_particles.exec(0.25);
-        relaxation_step_inner.SurfaceBounding().exec();
-        write_herat_model_state_to_vtp.writeToFile(0.0);
-
-        // From here the time stepping begins.        
-        int relax_step = 1000; // original: 1000. NOTE: if the step is not enough, the simulation will result NaN after some time)
-        while (ite < relax_step)
-        {
-            relaxation_step_inner.exec();
-            ite++;
-            if (ite % 100 == 0)
-            {
-                std::cout << std::fixed << std::setprecision(9) << "Relaxation steps N = " << ite << "\n";
-                write_herat_model_state_to_vtp.writeToFile(ite);
-            }
-        }
-
-        // Diffusion process to initialize fiber direction
-        GetDiffusionTimeStepSize get_time_step_size(herat_model);
-        DiffusionRelaxationRK2<DiffusionRelaxation<Inner<KernelGradientInner>, IsotropicDiffusion>> diffusion_relaxation(herat_model_inner);
-        SimpleDynamics<ComputeFiberAndSheetDirections> compute_fiber_sheet(herat_model, diffusion_species_name);
-        BodySurface surface_part(herat_model);
-        SimpleDynamics<DiffusionBCs> impose_diffusion_bc(surface_part, diffusion_species_name);
-        impose_diffusion_bc.exec();
-        write_herat_model_state_to_vtp.addToWrite<Real>(herat_model, diffusion_species_name);
-        write_herat_model_state_to_vtp.writeToFile(ite);
-
-        int diffusion_step = 100;
-        Real dt = get_time_step_size.exec();
-        while (ite <= diffusion_step + relax_step)
-        {
-            diffusion_relaxation.exec(dt);
-            impose_diffusion_bc.exec();
-            if (ite % 10 == 0)
-            {
-                std::cout << "Diffusion steps N=" << ite - relax_step << "	dt: " << dt << "\n";
-                write_herat_model_state_to_vtp.writeToFile(ite);
-            }
-            ite++;
-        }
-        compute_fiber_sheet.exec();
+        relaxation_step_inner.exec();
         ite++;
-        write_herat_model_state_to_vtp.writeToFile(ite);
-        compute_fiber_sheet.exec();
-        write_particle_reload_files.writeToFile(0);
-
-        // return 0;
+        if (ite % 100 == 0)
+        {
+            std::cout << std::fixed << std::setprecision(9) << "Relaxation steps N = " << ite << "\n";
+            write_herat_model_state_to_vtp.writeToFile(ite);
+        }
     }
+
+    // Diffusion process to initialize fiber direction
+    GetDiffusionTimeStepSize get_time_step_size(herat_model);
+    DiffusionRelaxationRK2<DiffusionRelaxation<Inner<KernelGradientInner>, IsotropicDiffusion>> diffusion_relaxation_1(herat_model_inner);
+    SimpleDynamics<ComputeFiberAndSheetDirections> compute_fiber_sheet(herat_model, diffusion_species_name);
+    BodySurface surface_part(herat_model);
+    SimpleDynamics<DiffusionBCs> impose_diffusion_bc(surface_part, diffusion_species_name);
+    impose_diffusion_bc.exec();
+    write_herat_model_state_to_vtp.addToWrite<Real>(herat_model, diffusion_species_name);
+    write_herat_model_state_to_vtp.writeToFile(ite);
+
+    int diffusion_step = 100;
+    Real dt = get_time_step_size.exec();
+    while (ite <= diffusion_step + relax_step)
+    {
+        diffusion_relaxation_1.exec(dt);
+        impose_diffusion_bc.exec();
+        if (ite % 10 == 0)
+        {
+            std::cout << "Diffusion steps N=" << ite - relax_step << "	dt: " << dt << "\n";
+            write_herat_model_state_to_vtp.writeToFile(ite);
+        }
+        ite++;
+    }
+    compute_fiber_sheet.exec();
+    ite++;
+    write_herat_model_state_to_vtp.writeToFile(ite);
+    compute_fiber_sheet.exec();
+    write_particle_reload_files.writeToFile(0);
+    // }
 
     //----------------------------------------------------------------------
     // SPH simulation section
@@ -452,8 +450,8 @@ int main(int ac, char *av[])
     GetDiffusionTimeStepSize get_physiology_time_step(physiology_heart);
     
     // Diffusion process for diffusion body.
-    electro_physiology::ElectroPhysiologyDiffusionInnerRK2<LocalDirectionalDiffusion> diffusion_relaxation(physiology_heart_inner);
-    
+    electro_physiology::ElectroPhysiologyDiffusionInnerRK2<LocalDirectionalDiffusion> diffusion_relaxation_2(physiology_heart_inner);
+
     // Solvers for ODE system.
     electro_physiology::ElectroPhysiologyReactionRelaxationForward reaction_relaxation_forward(physiology_heart, aliev_panfilow_model);
     electro_physiology::ElectroPhysiologyReactionRelaxationBackward reaction_relaxation_backward(physiology_heart, aliev_panfilow_model);
@@ -515,7 +513,8 @@ int main(int ac, char *av[])
     int reaction_step = 2;
     Real Ouput_T = end_time / 200.0;
     Real Observer_time = 0.01 * Ouput_T;
-    Real dt = 0.0; // Default acoustic time step sizes for physiology
+    // Real dt = 0.0; // Default acoustic time step sizes for physiology
+    dt = 0.0; // Default acoustic time step sizes for physiology
     Real dt_s = 0.0; // Default acoustic time step sizes for mechanics
 
     // Statistics for computing time. 
@@ -561,7 +560,7 @@ int main(int ac, char *av[])
                     ite_forward++;
                 }
                 // 2nd Runge-Kutta scheme for diffusion. 
-                diffusion_relaxation.exec(dt);
+                diffusion_relaxation_2.exec(dt);
 
                 // backward reaction
                 int ite_backward = 0;
