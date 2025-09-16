@@ -328,7 +328,6 @@ int main(int ac, char *av[])
     //----------------------------------------------------------------------
     int ite = 0;
 
-    // {
     SolidBody herat_model(sph_system, makeShared<Heart>("HeartModel"));
 
     herat_model.defineBodyLevelSetShape()->correctLevelSetSign()->writeLevelSet(sph_system);
@@ -395,7 +394,6 @@ int main(int ac, char *av[])
     write_herat_model_state_to_vtp.writeToFile(ite);
     compute_fiber_sheet.exec();
     write_particle_reload_files.writeToFile(0);
-    // }
 
     //----------------------------------------------------------------------
     // SPH simulation section
@@ -419,8 +417,6 @@ int main(int ac, char *av[])
     InnerRelation mechanics_body_inner(mechanics_heart);
     ContactRelation physiology_heart_contact(physiology_heart, {&mechanics_heart});
     ContactRelation mechanics_body_contact(mechanics_heart, {&physiology_heart});
-    // ContactRelation voltage_observer_contact(voltage_observer, {&physiology_heart});
-    // ContactRelation myocardium_observer_contact(myocardium_observer, {&mechanics_heart});
 
     //----------------------------------------------------------------------
     // SPH Method section
@@ -541,6 +537,7 @@ int main(int ac, char *av[])
                     reaction_relaxation_forward.exec(0.5 * dt / Real(reaction_step));
                     ite_forward++;
                 }
+                
                 // 2nd Runge-Kutta scheme for diffusion. 
                 diffusion_relaxation_2.exec(dt);
 
