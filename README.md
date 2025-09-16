@@ -17,7 +17,9 @@ Then open terminal in folder /electromechanical-heart-simulator/build/sim/bin/
 Use software ParaView (https://www.paraview.org/) to view the simulation result  
 Results will be in folder /electromechanical-heart-simulator/build/sim/bin/output  
 Install ParaView: brew install paraview  
-ParaView can open MechanicalHeart_0000000000.vtp and play the simulation movie  
+ParaView can open PhysiologyHeart_0000000000.vtp and play the simulation movie  
+
+There are useful codes in the folder "tools".
 
 # Install dependencies
 # ------------------------------
