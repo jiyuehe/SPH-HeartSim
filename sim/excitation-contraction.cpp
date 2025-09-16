@@ -269,16 +269,6 @@ class MuscleBaseShapeParameters : public TriangleMeshShapeBrick::ShapeParameters
     }
 };
 
-StdVec<Vec3d> createObservationPoints()
-{
-    StdVec<Vec3d> observation_points;
-    observation_points.push_back(Vec3d(-45.0, -30.0, 0.0));
-    observation_points.push_back(Vec3d(0.0, -30.0, 26.0));
-    observation_points.push_back(Vec3d(-30.0, -50.0, 0.0));
-    observation_points.push_back(Vec3d(0.0, -50.0, 20.0));
-    observation_points.push_back(Vec3d(0.0, -70.0, 0.0));
-    return observation_points;
-};
 } // namespace SPH
 
 int main(int ac, char *av[])
@@ -423,23 +413,14 @@ int main(int ac, char *av[])
     physiology_heart.generateParticles<BaseParticles, Reload>("HeartModel");
 
     //----------------------------------------------------------------------
-    // SPH Observation section
-    //----------------------------------------------------------------------
-    ObserverBody voltage_observer(sph_system, "VoltageObserver");
-    voltage_observer.generateParticles<ObserverParticles>(createObservationPoints());
-
-    ObserverBody myocardium_observer(sph_system, "MyocardiumObserver");
-    myocardium_observer.generateParticles<ObserverParticles>(createObservationPoints());
-
-    //----------------------------------------------------------------------
     // SPHBody relation (topology) section
     //----------------------------------------------------------------------
     InnerRelation physiology_heart_inner(physiology_heart);
     InnerRelation mechanics_body_inner(mechanics_heart);
     ContactRelation physiology_heart_contact(physiology_heart, {&mechanics_heart});
     ContactRelation mechanics_body_contact(mechanics_heart, {&physiology_heart});
-    ContactRelation voltage_observer_contact(voltage_observer, {&physiology_heart});
-    ContactRelation myocardium_observer_contact(myocardium_observer, {&mechanics_heart});
+    // ContactRelation voltage_observer_contact(voltage_observer, {&physiology_heart});
+    // ContactRelation myocardium_observer_contact(myocardium_observer, {&mechanics_heart});
 
     //----------------------------------------------------------------------
     // SPH Method section
