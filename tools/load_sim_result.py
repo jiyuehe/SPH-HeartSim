@@ -84,7 +84,6 @@ for particle in range(num_particles):
 debug_plot = 0
 if debug_plot == 1:
     particle_id = 1000
-
     plt.figure()
     plt.plot(t, voltage[particle_id], 'b-', linewidth=1)
     plt.xlabel('time, unit: ms')
@@ -92,4 +91,41 @@ if debug_plot == 1:
     plt.title('Voltage Over Time for a Particle')
     plt.savefig('/home/j/Desktop/voltage_of_a_particle.png')
 
+stress = []
+num_particles = len(stress_temp[0])
+num_time_steps = len(stress_temp)
+for particle in range(num_particles):
+    particle_stress = []
+    for time in range(num_time_steps):
+        particle_stress.append(stress_temp[time][particle])
+    stress.append(particle_stress)
 
+debug_plot = 0
+if debug_plot == 1:
+    particle_id = 1000
+    plt.figure()
+    plt.plot(t, stress[particle_id], 'b-', linewidth=1)
+    plt.xlabel('time, unit: ms')
+    plt.ylabel('stress')
+    plt.title('Stress Over Time for a Particle')
+    plt.savefig('/home/j/Desktop/stress_of_a_particle.png')
+
+xyz = [] # xyz[particle_id][time][coordinate_id]
+num_particles = len(xyz_temp[0])
+num_time_steps = len(xyz_temp)
+for particle in range(num_particles):
+    particle_xyz = []
+    for time in range(num_time_steps):
+        particle_xyz.append(xyz_temp[time][particle])
+    xyz.append(particle_xyz)
+
+debug_plot = 0
+if debug_plot == 1:
+    particle_id = 1000
+    x_coordinate = [xyz[particle_id][time][0] for time in range(len(xyz[particle_id]))]
+    plt.figure()
+    plt.plot(t, x_coordinate, 'b-', linewidth=1)
+    plt.xlabel('time, unit: ms')
+    plt.ylabel('x coordinate')
+    plt.title('x Coordinate vs Time for a Particle')
+    plt.savefig('/home/j/Desktop/x_coordinate_of_a_particle.png')
