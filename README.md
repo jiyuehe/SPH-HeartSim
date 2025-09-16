@@ -1,11 +1,11 @@
 ![Demo](electromechanical_simulation.gif)
 
 # Introduction
-# ------------------------------
+------------------------------  
 This work is based on the open-source framework SPHinXsys (Smoothed Particle Hydrodynamics for Industrial Complex Systems, https://www.sphinxsys.org). The framework provides numerous demonstration codes for phenomena such as dam breaks, elastic water gates, and heat transfer, as well as a bi-ventricle electromechanical simulation. I have extended the codebase to enable cardiac electromechanical simulations on arbitrary geometries, including patient-specific atria and ventricles.
 
 # How to run simulation
-# ------------------------------
+------------------------------  
 Open terminal in folder /electromechanical-heart-simulator  
 mkdir build && cd build  
 cmake .. -DCMAKE_BUILD_TYPE=Release  
@@ -19,10 +19,10 @@ Results will be in folder /electromechanical-heart-simulator/build/sim/bin/outpu
 Install ParaView: brew install paraview  
 ParaView can open PhysiologyHeart_0000000000.vtp and play the simulation movie  
 
-There are useful codes in the folder "tools".
+There are useful codes in the folder "tools".  
 
 # Install dependencies
-# ------------------------------
+------------------------------  
 ## Manjaro Linux
 sudo pacman -Syu  
 sudo pacman -S base-devel cmake git python python-pip eigen  
@@ -39,12 +39,14 @@ make -j$(nproc)
 sudo make install  
 export CMAKE_PREFIX_PATH=/usr/local  
 
+------------------------------  
 ## Ubuntu
 sudo apt install libsimbody-dev  
 sudo apt install libeigen3-dev  
 sudo apt install libtbb-dev  
 sudo apt install libboost-all-dev  
-  
+
+------------------------------  
 ## MacOS
 brew install eigen  
 brew install tbb  
