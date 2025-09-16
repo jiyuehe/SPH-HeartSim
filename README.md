@@ -1,4 +1,5 @@
 ![Demo](electromechanical_simulation.gif)
+![Demo](voltage_of_a_particle.png)
 
 # Introduction
 ------------------------------  
