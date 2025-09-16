@@ -28,6 +28,7 @@ sudo pacman -Syu
 sudo pacman -S base-devel cmake git python python-pip eigen  
 sudo pacman -S cmake git gcc-fortran  
 sudo pacman -S tbb  
+sudo pacman -S boost-libs  
 
 Install Simbody:  
 cd Desktop  
