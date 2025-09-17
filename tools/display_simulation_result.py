@@ -1,5 +1,11 @@
+# will need to install ffmpeg for saving the movie as a mp4 file
+# sudo apt install ffmpeg
+
 # %%
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.animation import FFMpegWriter
+import numpy as np
 import fn_load_simulation_result # function of loading simulation results
 import fn_set_axes_equal
 
@@ -11,7 +17,7 @@ t, voltage, stress, xyz = fn_load_simulation_result.execute(folder_path)
 # stress[particles, time_steps]
 # xyz[particles, time_steps, coordinates]
 
-debug_plot = 1
+debug_plot = 0
 if debug_plot == 1:
     # plot the action potential voltage of a particle
     particle_id = 1000
@@ -43,4 +49,83 @@ if debug_plot == 1:
 
     plt.show()
 
-# %%
+# %% display simulation movie
+num_particles, num_time_steps, _ = xyz.shape
+v_min = np.min(voltage)
+v_max = np.max(voltage)
+
+do_flag = 0
+if do_flag == 1:
+    interval = 0.1
+
+    plt.figure(figsize=(10, 8))
+    ax = plt.axes(projection='3d')
+    for n in range(num_time_steps):
+        # clear the plot
+        ax.clear()
+
+        v = voltage[:, n]
+        v_min_mask = (v<=0.13)
+
+        # plot particles
+        ax.scatter(xyz[v_min_mask, n, 0], xyz[v_min_mask, n, 1], xyz[v_min_mask, n, 2], 
+                    c='gray', s=2, marker='.', alpha=1)
+    
+        ax.scatter(xyz[~v_min_mask, n, 0], xyz[~v_min_mask, n, 1], xyz[~v_min_mask, n, 2], 
+                    c=v[~v_min_mask], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
+        
+        # set title with current time step
+        ax.set_title(f'Time: {t[n]}/{t[-1]}')
+        
+        # reset axis properties
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        fn_set_axes_equal.execute(ax)
+
+        plt.pause(interval)
+
+# save simulation movie as mp4
+do_flag = 1
+if do_flag == 1:
+    interval = 0.1
+
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    def animate(n):
+        # store current view angle before clearing
+        elev = ax.elev
+        azim = ax.azim
+
+        ax.clear()
+        
+        v = voltage[:, n]
+        v_min_mask = (v <= 0.1)
+        
+        # Plot particles
+        ax.scatter(xyz[v_min_mask, n, 0], xyz[v_min_mask, n, 1], xyz[v_min_mask, n, 2], 
+                c='gray', s=2, marker='.', alpha=1)
+        
+        ax.scatter(xyz[~v_min_mask, n, 0], xyz[~v_min_mask, n, 1], xyz[~v_min_mask, n, 2], 
+                c=v[~v_min_mask], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
+        
+        ax.set_title(f'Time: {t[n]:.3f}/{t[-1]:.3f}')
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        fn_set_axes_equal.execute(ax)
+
+        # restore view angle to maintain user's rotation
+        ax.view_init(elev=elev, azim=azim)
+
+    anim = animation.FuncAnimation(fig, animate, frames=num_time_steps, interval=10, blit=False, repeat=False)
+    # the interval parameter specifies the delay between frames in milliseconds
+
+    # save
+    writer = FFMpegWriter(fps=10, bitrate=1800)
+    anim.save('simulation movie.mp4', writer=writer)
+
+    plt.show()
+
+    print("movie saved as mp4")
