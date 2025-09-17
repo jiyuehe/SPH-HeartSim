@@ -84,7 +84,7 @@ for p in Position:
     # print(p)
     if 0.0 <= p[0] and p[0] <= 6.0: # x coordinates
         if -6.0 <= p[1]: #and p[1] <= -38.0: # y coordinates
-            if 12.0 <= p[2]: #and p[2] <= 2.0:  # z coordinates
+            if 12.0 <= p[2]: #and p[2] <= 2.0: # z coordinates
                 pacing_id_s2 = np.append(pacing_id_s2,i)
     i = i+1
 
