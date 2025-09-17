@@ -67,22 +67,14 @@ for file_name in file_names_sorted:
     data = np.array(list(map(float, text_data)), dtype=float)
     stress_temp.append(data)
 
-# save data in time series
-t = [] # time 
-for n in numbers_sorted: # n: time stamps
-    t.append(n/1000000) # time
+# %% save data in time series
+t = np.array(numbers_sorted) / 1000000  # time in ms
+voltage = np.array(voltage_temp).T # .T is transpose
+stress = np.array(stress_temp).T
 
-voltage = []
-num_particles = len(voltage_temp[0])
-num_time_steps = len(voltage_temp)
-for particle in range(num_particles):
-    particle_voltages = []
-    for time in range(num_time_steps):
-        particle_voltages.append(voltage_temp[time][particle])
-    voltage.append(particle_voltages)
-
-debug_plot = 0
+debug_plot = 0 
 if debug_plot == 1:
+    # plot the action potential voltage of a particle
     particle_id = 1000
     plt.figure()
     plt.plot(t, voltage[particle_id], 'b-', linewidth=1)
@@ -91,17 +83,7 @@ if debug_plot == 1:
     plt.title('Voltage Over Time of a Particle')
     plt.savefig('/home/j/Desktop/voltage_of_a_particle.png')
 
-stress = []
-num_particles = len(stress_temp[0])
-num_time_steps = len(stress_temp)
-for particle in range(num_particles):
-    particle_stress = []
-    for time in range(num_time_steps):
-        particle_stress.append(stress_temp[time][particle])
-    stress.append(particle_stress)
-
-debug_plot = 0
-if debug_plot == 1:
+    # plot the mechanical stress of a particle
     particle_id = 1000
     plt.figure()
     plt.plot(t, stress[particle_id], 'b-', linewidth=1)
