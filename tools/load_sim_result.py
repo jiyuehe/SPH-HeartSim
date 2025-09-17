@@ -88,7 +88,7 @@ if debug_plot == 1:
     plt.plot(t, voltage[particle_id], 'b-', linewidth=1)
     plt.xlabel('time, unit: ms')
     plt.ylabel('voltage')
-    plt.title('Voltage Over Time for a Particle')
+    plt.title('Voltage Over Time of a Particle')
     plt.savefig('/home/j/Desktop/voltage_of_a_particle.png')
 
 stress = []
@@ -107,7 +107,7 @@ if debug_plot == 1:
     plt.plot(t, stress[particle_id], 'b-', linewidth=1)
     plt.xlabel('time, unit: ms')
     plt.ylabel('stress')
-    plt.title('Stress Over Time for a Particle')
+    plt.title('Stress Over Time of a Particle')
     plt.savefig('/home/j/Desktop/stress_of_a_particle.png')
 
 xyz = [] # xyz[particle_id][time][coordinate_id]
@@ -127,5 +127,5 @@ if debug_plot == 1:
     plt.plot(t, x_coordinate, 'b-', linewidth=1)
     plt.xlabel('time, unit: ms')
     plt.ylabel('x coordinate')
-    plt.title('x Coordinate vs Time for a Particle')
+    plt.title('x Coordinate vs Time of a Particle')
     plt.savefig('/home/j/Desktop/x_coordinate_of_a_particle.png')
