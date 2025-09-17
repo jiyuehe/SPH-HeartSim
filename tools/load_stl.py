@@ -1,8 +1,3 @@
-# to activate a Python virtual environment
-# source /home/j/myenv/bin/activate
-# to deactivate the virtual environment
-# deactivate
-
 # %%
 import os
 from stl import mesh # pip install numpy-stl

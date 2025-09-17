@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import fn_load_simulation_result # function of loading simulation results
 import fn_set_axes_equal
 
-# %%
+# %% load simulation results
 folder_path = "../build/sim/bin/output/"
 t, voltage, stress, xyz = fn_load_simulation_result.execute(folder_path)
 # t[time_id]
@@ -11,7 +11,7 @@ t, voltage, stress, xyz = fn_load_simulation_result.execute(folder_path)
 # stress[particles, time_steps]
 # xyz[particles, time_steps, coordinates]
 
-debug_plot = 0
+debug_plot = 1
 if debug_plot == 1:
     # plot the action potential voltage of a particle
     particle_id = 1000
