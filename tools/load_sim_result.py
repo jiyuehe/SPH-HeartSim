@@ -106,3 +106,4 @@ if debug_plot == 1:
     plt.ylabel('x coordinate')
     plt.title('x Coordinate vs Time of a Particle')
     plt.savefig('/home/j/Desktop/x_coordinate_of_a_particle.png')
+
