@@ -50,9 +50,9 @@ print(f"X range: {x_min:.3f} to {x_max:.3f}")
 print(f"Y range: {y_min:.3f} to {y_max:.3f}")
 print(f"Z range: {z_min:.3f} to {z_max:.3f}")
 
-# %% plot
 debug_plot = 0
 if debug_plot == 1:
+    # plot the particles of HeartModelPart2ID == 0 and HeartModelPart2ID == 2
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     id1 = HeartModelPart2ID == 0
