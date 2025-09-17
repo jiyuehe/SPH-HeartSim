@@ -1,10 +1,15 @@
 # %%
 import matplotlib.pyplot as plt
-import load_simulation_result
+import fn_load_simulation_result # function of loading simulation results
+import fn_set_axes_equal
 
 # %%
 folder_path = "../build/sim/bin/output/"
-t, voltage, stress, xyz = load_simulation_result.load(folder_path)
+t, voltage, stress, xyz = fn_load_simulation_result.execute(folder_path)
+# t[time_id]
+# voltage[particles, time_steps]
+# stress[particles, time_steps]
+# xyz[particles, time_steps, coordinates]
 
 debug_plot = 0
 if debug_plot == 1:
@@ -36,5 +41,6 @@ if debug_plot == 1:
     plt.title('x Coordinate vs Time of a Particle')
     # plt.savefig('/home/j/Desktop/x_coordinate_of_a_particle.png')
 
+    plt.show()
 
 # %%

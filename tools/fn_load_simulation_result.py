@@ -5,7 +5,12 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import matplotlib.pyplot as plt
 
-def load(folder_path):
+# t[time_id]
+# voltage[particles, time_steps]
+# stress[particles, time_steps]
+# xyz[particles, time_steps, coordinates]
+
+def execute(folder_path):
     script_dir = os.path.dirname(os.path.abspath(__file__)) # get the path of the current script
     os.chdir(script_dir) # change the working directory
 
