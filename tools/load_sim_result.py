@@ -71,8 +71,13 @@ for file_name in file_names_sorted:
 t = np.array(numbers_sorted) / 1000000  # time in ms
 voltage = np.array(voltage_temp).T # .T is transpose
 stress = np.array(stress_temp).T
+xyz = np.array(xyz_temp).transpose(1, 0, 2) # xyz[particles, time_steps, coordinates]
+    # .transpose(1, 0, 2) means:
+    # xyz_temp's axis 0 (time axis) is moved to position 1
+    # xyz_temp's axis 1 (particle axis) is moved to position 0
+    # xyz_temp's axis 2 (coordinate axis) stays in position 2
 
-debug_plot = 0 
+debug_plot = 0
 if debug_plot == 1:
     # plot the action potential voltage of a particle
     particle_id = 1000
@@ -92,17 +97,7 @@ if debug_plot == 1:
     plt.title('Stress Over Time of a Particle')
     plt.savefig('/home/j/Desktop/stress_of_a_particle.png')
 
-xyz = [] # xyz[particle_id][time][coordinate_id]
-num_particles = len(xyz_temp[0])
-num_time_steps = len(xyz_temp)
-for particle in range(num_particles):
-    particle_xyz = []
-    for time in range(num_time_steps):
-        particle_xyz.append(xyz_temp[time][particle])
-    xyz.append(particle_xyz)
-
-debug_plot = 0
-if debug_plot == 1:
+    # plot a coordinate axis movements of a particle
     particle_id = 1000
     x_coordinate = [xyz[particle_id][time][0] for time in range(len(xyz[particle_id]))]
     plt.figure()
