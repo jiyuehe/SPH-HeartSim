@@ -85,7 +85,7 @@ if do_flag == 1:
         plt.pause(interval)
 
 # save simulation movie as mp4
-do_flag = 1
+do_flag = 0
 if do_flag == 1:
     print("saving movie as mp4")
 
