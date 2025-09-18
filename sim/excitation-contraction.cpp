@@ -16,7 +16,7 @@ using namespace SPH;
 // settings
 // ------------------------------------------------------------
 int geometry_flag = 2; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
-Real end_time = 150; // simulation time, unit: ms
+Real end_time = 100; // simulation time, unit: ms
 int apply_s2_flag = 0; // 1: apply s2 pacing, 0: do not apply s2 pacing
 // ------------------------------------------------------------
 
@@ -95,7 +95,7 @@ class ApplyStimulusCurrentSI : public LocalDynamics
           pos_(particles_->getVariableDataByName<Vec3d>("Position")),
           voltage_(particles_->registerStateVariable<Real>("Voltage")) {};
 
-    void update(size_t index_i, Real dt)
+    void update(long unsigned int index_i, double dt)
     {
         if (geometry_flag == 1) { // ventricle
             if (-30.0 <= pos_[index_i][0] && pos_[index_i][0] <= -15.0) {

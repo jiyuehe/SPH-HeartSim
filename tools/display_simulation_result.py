@@ -59,7 +59,7 @@ if do_flag == 1:
     # dictionary to store view angles for each frame
     view_angles = {}
 
-    interval = 0.1
+    interval = 0.01
     plt.figure(figsize=(10, 8))
     ax = plt.axes(projection='3d')
     for n in range(num_time_steps):
