@@ -54,26 +54,20 @@ num_particles, num_time_steps, _ = xyz.shape
 v_min = np.min(voltage)
 v_max = np.max(voltage)
 
-do_flag = 0
+do_flag = 1
 if do_flag == 1:
-    interval = 0.1
+    # dictionary to store view angles for each frame
+    view_angles = {}
 
+    interval = 0.1
     plt.figure(figsize=(10, 8))
     ax = plt.axes(projection='3d')
     for n in range(num_time_steps):
-        # clear the plot
         ax.clear()
 
-        v = voltage[:, n]
-        v_min_mask = (v<=0.13)
-
-        # plot particles
-        ax.scatter(xyz[v_min_mask, n, 0], xyz[v_min_mask, n, 1], xyz[v_min_mask, n, 2], 
-                    c='gray', s=2, marker='.', alpha=1)
-    
-        ax.scatter(xyz[~v_min_mask, n, 0], xyz[~v_min_mask, n, 1], xyz[~v_min_mask, n, 2], 
-                    c=v[~v_min_mask], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
-        
+        ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], 
+                   c=voltage[:, n], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
+            
         # set title with current time step
         ax.set_title(f'Time: {t[n]}/{t[-1]}')
         
@@ -83,41 +77,39 @@ if do_flag == 1:
         ax.set_zlabel('Z')
         fn_set_axes_equal.execute(ax)
 
+        # capture current view angles
+        elev = ax.elev  # elevation angle
+        azim = ax.azim  # azimuth angle
+        view_angles[n] = {'elev': elev, 'azim': azim}
+
         plt.pause(interval)
 
 # save simulation movie as mp4
 do_flag = 1
 if do_flag == 1:
-    interval = 0.1
+    print("saving movie as mp4")
 
+    interval = 0.1
     fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
+    ax = plt.axes(projection='3d')
 
     def animate(n):
-        # store current view angle before clearing
-        elev = ax.elev
-        azim = ax.azim
-
         ax.clear()
         
-        v = voltage[:, n]
-        v_min_mask = (v <= 0.1)
+        ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], 
+                   c=voltage[:, n], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
+            
+        # set title with current time step
+        ax.set_title(f'Time: {t[n]}/{t[-1]}')
         
-        # Plot particles
-        ax.scatter(xyz[v_min_mask, n, 0], xyz[v_min_mask, n, 1], xyz[v_min_mask, n, 2], 
-                c='gray', s=2, marker='.', alpha=1)
-        
-        ax.scatter(xyz[~v_min_mask, n, 0], xyz[~v_min_mask, n, 1], xyz[~v_min_mask, n, 2], 
-                c=v[~v_min_mask], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
-        
-        ax.set_title(f'Time: {t[n]:.3f}/{t[-1]:.3f}')
+        # reset axis properties
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         fn_set_axes_equal.execute(ax)
 
         # restore view angle to maintain user's rotation
-        ax.view_init(elev=elev, azim=azim)
+        ax.view_init(elev=view_angles[n]['elev'], azim=view_angles[n]['azim'])
 
     anim = animation.FuncAnimation(fig, animate, frames=num_time_steps, interval=10, blit=False, repeat=False)
     # the interval parameter specifies the delay between frames in milliseconds
@@ -125,7 +117,5 @@ if do_flag == 1:
     # save
     writer = FFMpegWriter(fps=10, bitrate=1800)
     anim.save('simulation movie.mp4', writer=writer)
-
-    plt.show()
 
     print("movie saved as mp4")
