@@ -47,8 +47,7 @@ Real AlievPanfilowModel::getProductionRateGateVariable(LocalSpecies &species)
     return -temp * k_ * voltage * (voltage - b_ - 1.0);
 }
 //=================================================================================================//
-Real AlievPanfilowModel::
-    getLossRateGateVariable(LocalSpecies &species)
+Real AlievPanfilowModel::getLossRateGateVariable(LocalSpecies &species)
 {
     Real voltage = species[voltage_];
     Real gate_variable = species[gate_variable_];

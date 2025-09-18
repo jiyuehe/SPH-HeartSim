@@ -336,7 +336,7 @@ int main(int ac, char *av[])
         ConstructArgs(diffusion_species_name, diffusion_coeff));
     herat_model.generateParticles<BaseParticles, Lattice>();
     
-    // topology 
+    // Topology 
     InnerRelation herat_model_inner(herat_model);
     using namespace relax_dynamics;
     SimpleDynamics<RandomizeParticlePosition> random_particles(herat_model);

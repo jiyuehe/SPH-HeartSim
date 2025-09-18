@@ -83,8 +83,7 @@ class AlievPanfilowModel : public ElectroPhysiologyReaction
 
   public:
     explicit AlievPanfilowModel(Real k_a, Real c_m, Real k, Real a, Real b, Real mu_1, Real mu_2, Real epsilon)
-        : ElectroPhysiologyReaction(k_a), k_(k), a_(a), b_(b), mu_1_(mu_1), mu_2_(mu_2),
-          epsilon_(epsilon), c_m_(c_m)
+        : ElectroPhysiologyReaction(k_a), k_(k), a_(a), b_(b), mu_1_(mu_1), mu_2_(mu_2), epsilon_(epsilon), c_m_(c_m)
     {
         reaction_model_ = "AlievPanfilowModel";
     };
@@ -96,8 +95,7 @@ class AlievPanfilowModel : public ElectroPhysiologyReaction
  * @brief material class for electro_physiology.
  */
 template <class DirectionalDiffusionType>
-class MonoFieldElectroPhysiology
-    : public ReactionDiffusion<ElectroPhysiologyReaction, DirectionalDiffusionType>
+class MonoFieldElectroPhysiology : public ReactionDiffusion<ElectroPhysiologyReaction, DirectionalDiffusionType>
 {
   public:
     template <typename... Args, size_t... Is>
