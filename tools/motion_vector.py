@@ -54,3 +54,5 @@ if debug_plot == 1:
     ax.set_box_aspect([1,1,1])  # equal scale for x, y, z (this does not work)
     fn_set_axes_equal.execute(ax)
     plt.show()
+
+# %%
