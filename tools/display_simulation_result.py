@@ -54,6 +54,15 @@ num_particles, num_time_steps, _ = xyz.shape
 v_min = np.min(voltage)
 v_max = np.max(voltage)
 
+t_id = 0
+d_buffer = 5
+x_min = np.min(xyz[:,t_id,0]) - d_buffer
+y_min = np.min(xyz[:,t_id,1]) - d_buffer
+z_min = np.min(xyz[:,t_id,2]) - d_buffer
+x_max = np.max(xyz[:,t_id,0]) + d_buffer
+y_max = np.max(xyz[:,t_id,1]) + d_buffer
+z_max = np.max(xyz[:,t_id,2]) + d_buffer
+
 do_flag = 1
 if do_flag == 1:
     # dictionary to store view angles for each frame
@@ -76,6 +85,9 @@ if do_flag == 1:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         fn_set_axes_equal.execute(ax)
+        ax.set_xlim([x_min, x_max])
+        ax.set_ylim([y_min, y_max])
+        ax.set_zlim([z_min, z_max])
 
         # capture current view angles
         elev = ax.elev  # elevation angle
@@ -107,6 +119,9 @@ if do_flag == 1:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         fn_set_axes_equal.execute(ax)
+        ax.set_xlim([x_min, x_max])
+        ax.set_ylim([y_min, y_max])
+        ax.set_zlim([z_min, z_max])
 
         # restore view angle to maintain user's rotation
         ax.view_init(elev=view_angles[n]['elev'], azim=view_angles[n]['azim'])

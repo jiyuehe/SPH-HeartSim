@@ -66,12 +66,13 @@ pacing_id_s1 = np.zeros(0)
 i = 0
 for p in Position:
     # print(p)
-    if -4.0 <= p[0] and p[0] <= 0.0: # x coordinates
-        if -20.0 <= p[1] and p[1] <= -12.0: # y coordinates
-            if 136.0 <= p[2] and p[2] <= 140.0: # z coordinates
+    if -0.6 <= p[0] and p[0] <= 0.6: # x coordinates
+        if -0.6 <= p[1] and p[1] <= 0.6: # y coordinates
+            if -13.0 <= p[2] and p[2] <= -12.5: # z coordinates
                 pacing_id_s1 = np.append(pacing_id_s1,i)
     i = i+1
 pacing_id_s1 = pacing_id_s1.astype(int)
+print(*pacing_id_s1, sep=', ')
 
 pacing_id_s2 = np.zeros(0)
 i = 0
@@ -84,6 +85,7 @@ for p in Position:
     i = i+1
 
 pacing_id_s2 = pacing_id_s2.astype(int)
+# print(*pacing_id_s2, sep=', ')
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')

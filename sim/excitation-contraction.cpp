@@ -15,8 +15,8 @@ using namespace SPH;
 
 // settings
 // ------------------------------------------------------------
-int geometry_flag = 2; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
-Real end_time = 100; // simulation time, unit: ms
+int geometry_flag = 4; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
+Real end_time = 40; // simulation time, unit: ms
 int apply_s2_flag = 0; // 1: apply s2 pacing, 0: do not apply s2 pacing
 // ------------------------------------------------------------
 
@@ -93,42 +93,39 @@ class ApplyStimulusCurrentSI : public LocalDynamics
     explicit ApplyStimulusCurrentSI(SPHBody &sph_body)
         : LocalDynamics(sph_body),
           pos_(particles_->getVariableDataByName<Vec3d>("Position")),
-          voltage_(particles_->registerStateVariable<Real>("Voltage")) {};
+          voltage_(particles_->registerStateVariable<Real>("Voltage")) 
+    {
+        
+    };
 
     void update(long unsigned int index_i, double dt)
     {
+        std::vector<long unsigned int> pacing_particle_ids_ = {};
+
         if (geometry_flag == 1) { // ventricle
-            if (-30.0 <= pos_[index_i][0] && pos_[index_i][0] <= -15.0) {
-                if (-2.0 <= pos_[index_i][1] && pos_[index_i][1] <= 0.0) {
-                    if (-3.0 <= pos_[index_i][2] && pos_[index_i][2] <= 3.0) {
-                        voltage_[index_i] = 0.92;
-                    }
-                }
-            }
+            pacing_particle_ids_ = {1, 2, 3, 4, 5};
         } else if (geometry_flag == 2) { // atrium
-            if (-4.0 <= pos_[index_i][0] && pos_[index_i][0] <= 0.0) {
-                if (-20.0 <= pos_[index_i][1] && pos_[index_i][1] <= -12.0) {
-                    if (136.0 <= pos_[index_i][2] && pos_[index_i][2] <= 140.0) {
-                        voltage_[index_i] = 0.92;
-                    }
-                }
-            }
+            pacing_particle_ids_ = {22563, 22564, 22581, 22582};
         } else if (geometry_flag == 3) { // slab
-            if (-2.0 <= pos_[index_i][0] && pos_[index_i][0] <= 2.0) {
-                if (-2.0 <= pos_[index_i][1] && pos_[index_i][1] <= 2.0) {
-                    if (-2.0 <= pos_[index_i][2] && pos_[index_i][2] <= 2.0) {
-                        voltage_[index_i] = 0.92;
-                    }
-                }
-            }
+            pacing_particle_ids_ = {1, 2, 3, 4, 5};
         } else if (geometry_flag == 4) { // rabbit heart
-            if (-2.0 <= pos_[index_i][0] && pos_[index_i][0] <= 2.0) {
-                if (-2.0 <= pos_[index_i][1] && pos_[index_i][1] <= 2.0) {
-                    if (-13.0 <= pos_[index_i][2] && pos_[index_i][2] <= -11.0) {
-                        voltage_[index_i] = 0.92;
-                    }
-                }
+            // if (-0.6 <= pos_[index_i][0] && pos_[index_i][0] <= 0.6) {
+            //     if (-0.6 <= pos_[index_i][1] && pos_[index_i][1] <= 0.6) {
+            //         if (-13.0 <= pos_[index_i][2] && pos_[index_i][2] <= -12.5) {
+            //             voltage_[index_i] = 0.92;
+            //         }
+            //     }
+            // }
+
+            pacing_particle_ids_ = {24710, 24720, 24721, 24732, 25743, 25744, 25755};
+        }
+
+        // apply the pacing if the particle is a pacing particle
+        for (int i=0; i<pacing_particle_ids_.size(); ++i) {
+            if (index_i == pacing_particle_ids_[i]) {
+                voltage_[index_i] = 0.92;
             }
+            break;
         }
     };
 
