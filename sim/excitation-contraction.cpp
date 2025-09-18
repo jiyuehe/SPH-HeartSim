@@ -15,7 +15,7 @@ using namespace SPH;
 
 // settings
 // ------------------------------------------------------------
-int geometry_flag = 4; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
+int geometry_flag = 2; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
 Real end_time = 40; // simulation time, unit: ms
 int apply_s2_flag = 0; // 1: apply s2 pacing, 0: do not apply s2 pacing
 // ------------------------------------------------------------
@@ -109,14 +109,6 @@ class ApplyStimulusCurrentSI : public LocalDynamics
         } else if (geometry_flag == 3) { // slab
             pacing_particle_ids_ = {1, 2, 3, 4, 5};
         } else if (geometry_flag == 4) { // rabbit heart
-            // if (-0.6 <= pos_[index_i][0] && pos_[index_i][0] <= 0.6) {
-            //     if (-0.6 <= pos_[index_i][1] && pos_[index_i][1] <= 0.6) {
-            //         if (-13.0 <= pos_[index_i][2] && pos_[index_i][2] <= -12.5) {
-            //             voltage_[index_i] = 0.92;
-            //         }
-            //     }
-            // }
-
             pacing_particle_ids_ = {24710, 24720, 24721, 24732, 25743, 25744, 25755};
         }
 
@@ -125,7 +117,6 @@ class ApplyStimulusCurrentSI : public LocalDynamics
             if (index_i == pacing_particle_ids_[i]) {
                 voltage_[index_i] = 0.92;
             }
-            break;
         }
     };
 
