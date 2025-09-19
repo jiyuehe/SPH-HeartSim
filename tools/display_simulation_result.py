@@ -20,7 +20,7 @@ t, voltage, stress, xyz = fn_load_simulation_result.execute(folder_path)
 debug_plot = 0
 if debug_plot == 1:
     # plot the action potential voltage of a particle
-    particle_id = 1000
+    particle_id = 500
     plt.figure()
     plt.plot(t, voltage[particle_id], 'b-', linewidth=1)
     plt.xlabel('time, unit: ms')
@@ -29,7 +29,6 @@ if debug_plot == 1:
     # plt.savefig('/home/j/Desktop/voltage_of_a_particle.png')
 
     # plot the mechanical stress of a particle
-    particle_id = 1000
     plt.figure()
     plt.plot(t, stress[particle_id], 'b-', linewidth=1)
     plt.xlabel('time, unit: ms')
@@ -38,7 +37,6 @@ if debug_plot == 1:
     # plt.savefig('/home/j/Desktop/stress_of_a_particle.png')
 
     # plot a coordinate axis movements of a particle
-    particle_id = 1000
     x_coordinate = [xyz[particle_id][time][0] for time in range(len(xyz[particle_id]))]
     plt.figure()
     plt.plot(t, x_coordinate, 'b-', linewidth=1)
@@ -65,6 +63,8 @@ z_max = np.max(xyz[:,t_id,2]) + d_buffer
 
 do_flag = 1
 if do_flag == 1:
+    print("display movie")
+
     # dictionary to store view angles for each frame
     view_angles = {}
 
@@ -72,6 +72,8 @@ if do_flag == 1:
     plt.figure(figsize=(10, 8))
     ax = plt.axes(projection='3d')
     for n in range(num_time_steps):
+        print(n/num_time_steps)
+
         ax.clear()
 
         ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], 
@@ -96,41 +98,42 @@ if do_flag == 1:
 
         plt.pause(interval)
 
-# save simulation movie as mp4
-do_flag = 0
-if do_flag == 1:
-    print("saving movie as mp4")
+    # save simulation movie as mp4
+    do_flag = 1
+    if do_flag == 1:
+        print("saving movie as mp4")
 
-    interval = 0.1
-    fig = plt.figure(figsize=(10, 8))
-    ax = plt.axes(projection='3d')
+        fig = plt.figure(figsize=(10, 8))
+        ax = plt.axes(projection='3d')
 
-    def animate(n):
-        ax.clear()
-        
-        ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], 
-                   c=voltage[:, n], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
+        def animate(n):
+            print(n/num_time_steps)
+
+            ax.clear()
             
-        # set title with current time step
-        ax.set_title(f'Time: {t[n]}/{t[-1]}')
-        
-        # reset axis properties
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
-        fn_set_axes_equal.execute(ax)
-        ax.set_xlim([x_min, x_max])
-        ax.set_ylim([y_min, y_max])
-        ax.set_zlim([z_min, z_max])
+            ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], 
+                    c=voltage[:, n], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
+                
+            # set title with current time step
+            ax.set_title(f'Time: {t[n]}/{t[-1]}')
+            
+            # reset axis properties
+            ax.set_xlabel('X')
+            ax.set_ylabel('Y')
+            ax.set_zlabel('Z')
+            fn_set_axes_equal.execute(ax)
+            ax.set_xlim([x_min, x_max])
+            ax.set_ylim([y_min, y_max])
+            ax.set_zlim([z_min, z_max])
 
-        # restore view angle to maintain user's rotation
-        ax.view_init(elev=view_angles[n]['elev'], azim=view_angles[n]['azim'])
+            # restore view angle to maintain user's rotation
+            ax.view_init(elev=view_angles[n]['elev'], azim=view_angles[n]['azim'])
 
-    anim = animation.FuncAnimation(fig, animate, frames=num_time_steps, interval=10, blit=False, repeat=False)
-    # the interval parameter specifies the delay between frames in milliseconds
+        anim = animation.FuncAnimation(fig, animate, frames=num_time_steps, interval=10, blit=False, repeat=False)
+        # the interval parameter specifies the delay between frames in milliseconds
 
-    # save
-    writer = FFMpegWriter(fps=10, bitrate=1800)
-    anim.save('simulation movie.mp4', writer=writer)
+        # save
+        writer = FFMpegWriter(fps=10, bitrate=1800)
+        anim.save('simulation movie.mp4', writer=writer)
 
-    print("movie saved as mp4")
+        print("movie saved as mp4")
