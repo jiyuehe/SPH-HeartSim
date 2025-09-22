@@ -16,7 +16,7 @@ void ElectroPhysiologyReaction::initializeElectroPhysiologyReaction()
 //=================================================================================================//
 Real ElectroPhysiologyReaction::getProductionActiveContractionStress(LocalSpecies &species)
 {
-    Real voltage_dim = species[voltage_] * 100.0 - 80.0;
+    Real voltage_dim = species[voltage_] * 100.0 - 80.0; // E[mV] = 100*u - 80
     Real factor = 0.1 + (1.0 - 0.1) * exp(-exp(-voltage_dim));
     return factor * k_a_ * (voltage_dim + 80.0);
 }
