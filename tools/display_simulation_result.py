@@ -17,16 +17,16 @@ t, voltage, stress, xyz = fn_load_simulation_result.execute(folder_path)
 # stress[particles, time_steps]
 # xyz[particles, time_steps, coordinates]
 
-debug_plot = 0
+debug_plot = 1
 if debug_plot == 1:
     # plot the action potential voltage of a particle
-    particle_id = 500
+    particle_id = 1800
     plt.figure()
     plt.plot(t, voltage[particle_id], 'b-', linewidth=1)
     plt.xlabel('time, unit: ms')
     plt.ylabel('voltage')
     plt.title('Voltage Over Time of a Particle')
-    # plt.savefig('/home/j/Desktop/voltage_of_a_particle.png')
+    plt.savefig('../result/voltage_of_a_particle.png')
 
     # plot the mechanical stress of a particle
     plt.figure()
@@ -34,7 +34,7 @@ if debug_plot == 1:
     plt.xlabel('time, unit: ms')
     plt.ylabel('stress')
     plt.title('Stress Over Time of a Particle')
-    # plt.savefig('/home/j/Desktop/stress_of_a_particle.png')
+    plt.savefig('../result/stress_of_a_particle.png')
 
     # plot a coordinate axis movements of a particle
     x_coordinate = [xyz[particle_id][time][0] for time in range(len(xyz[particle_id]))]
@@ -43,7 +43,7 @@ if debug_plot == 1:
     plt.xlabel('time, unit: ms')
     plt.ylabel('x coordinate')
     plt.title('x Coordinate vs Time of a Particle')
-    # plt.savefig('/home/j/Desktop/x_coordinate_of_a_particle.png')
+    plt.savefig('../result/x_coordinate_of_a_particle.png')
 
     plt.show()
 
@@ -134,6 +134,6 @@ if do_flag == 1:
 
         # save
         writer = FFMpegWriter(fps=10, bitrate=1800)
-        anim.save('simulation movie.mp4', writer=writer)
+        anim.save('../result/simulation movie.mp4', writer=writer)
 
         print("movie saved as mp4")
