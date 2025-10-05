@@ -65,6 +65,7 @@ make -j$(nproc)
 sudo make install  
 Now can delete the simbody folder  
 
+Most likely it will take forever to build on a Macbook Air, can try the below, but did not work on my 2025 Macbook Air.
 To make the c++ build faster:  
 brew install ccache  
 export PATH="/opt/homebrew/opt/ccache/libexec:$PATH"  
