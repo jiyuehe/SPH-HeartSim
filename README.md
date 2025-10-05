@@ -8,16 +8,16 @@ This work is based on the open-source framework SPHinXsys (Smoothed Particle Hyd
 
 # How to run simulation
 ------------------------------  
-Open terminal in folder /electromechanical-heart-simulator  
+Open terminal in folder /SPH-HeartSim  
 mkdir build && cd build  
 cmake .. -DCMAKE_BUILD_TYPE=Release  
 (NOTE: if no -DCMAKE_BUILD_TYPE=Release at the end, the compiled code runs much slower because it will be in debug mode)  
 make -j$(nproc)  
-Then open terminal in folder /electromechanical-heart-simulator/build/sim/bin/  
+Then open terminal in folder /SPH-HeartSim/build/sim/bin/  
 ./sim  
 
 Use software ParaView (https://www.paraview.org/) to view the simulation result  
-Results will be in folder /electromechanical-heart-simulator/build/sim/bin/output  
+Results will be in folder /SPH-HeartSim/build/sim/bin/output  
 Install ParaView: brew install paraview  
 ParaView can open PhysiologyHeart_0000000000.vtp and play the simulation movie  
 
@@ -64,3 +64,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)  
 sudo make install  
 Now can delete the simbody folder  
+
+To make the c++ build faster:  
+brew install ccache  
+export PATH="/opt/homebrew/opt/ccache/libexec:$PATH"  
