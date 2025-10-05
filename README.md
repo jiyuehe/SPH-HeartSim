@@ -68,3 +68,7 @@ Now can delete the simbody folder
 To make the c++ build faster:  
 brew install ccache  
 export PATH="/opt/homebrew/opt/ccache/libexec:$PATH"  
+
+brew install llvm
+then choose the compiler in Visual Studio Code: 
+Cmd+Shift+P --> CMake: Select a Kit --> /opt/homebrew/opt/llvm/bin/clang++
