@@ -2,14 +2,19 @@
 # sudo apt install ffmpeg
 
 # %%
+import os
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.animation import FFMpegWriter
 import numpy as np
+import codes
 
 # %% load simulation results
+script_dir = os.path.dirname(os.path.abspath(__file__)) # get the path of the current script
+os.chdir(script_dir) # change the working directory
+
 folder_path = "../build/sim/bin/output/"
-t, voltage, stress, xyz = fn_load_simulation_result.execute(folder_path)
+t, voltage, stress, xyz = codes.load_simulation_result.execute(folder_path)
 # t[time_id]
 # voltage[particles, time_steps]
 # stress[particles, time_steps]
@@ -62,7 +67,7 @@ for n in range(n_time):
     if ((n+1) % (n_time//5)) == 0:
         print(f'compute color map {(n+1)/n_time*100:.1f}%')
     data = movie_data[:, n]
-    color = convert_data_to_color.execute(data, data_min, data_max, data_threshold)
+    color = codes.convert_data_to_color.execute(data, data_min, data_max, data_threshold)
     map_color[n] = color
 
 t_id = 0
@@ -77,14 +82,15 @@ z_max = np.max(xyz[:,t_id,2]) + d_buffer
 fig = plt.figure(figsize=(10, 8))
 ax = plt.axes(projection='3d')
 ax.view_init(elev = -50, azim = 100)
-plot_handle = ax.scatter(voxel[:, 0], voxel[:, 1], voxel[:, 2], c=map_color[0], s=2, alpha=1)
+n = 0 # time index
+plot_handle = ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], c=map_color[0], s=2, alpha=1)
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
 ax.set_xlim([x_min, x_max])
 ax.set_ylim([y_min, y_max])
 ax.set_zlim([z_min, z_max])
-set_axes_equal.execute(ax)
+codes.set_axes_equal.execute(ax)
 
 pause_interval = 0.001
 view_angles = {} # dictionary to store view angles for each frame
@@ -92,6 +98,8 @@ n_time = movie_data.shape[1]
 for n in range(n_time):
     if ((n+1) % (n_time//5)) == 0:
         print(f'playing movie {(n+1)/n_time*100:.1f}%')
+
+    plot_handle._offsets3d = (xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2]) # update voxels positions
 
     plot_handle.set_facecolor(map_color[n]) # set color based on phase to each voxel
     ax.set_title(f'Time: {n}/{n_time} ms') # set title with current time step
@@ -104,6 +112,7 @@ for n in range(n_time):
     plt.pause(pause_interval)
 
 # save simulation movie as mp4
+save_flag = 1
 if save_flag == 1:
     print("saving movie as mp4")
 
@@ -111,6 +120,8 @@ if save_flag == 1:
         if ((n+1) % (n_time//10)) == 0:
             print(f'saving movie {(n+1)/n_time*100:.1f}%')
 
+        plot_handle._offsets3d = (xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2]) # update voxels positions
+        
         plot_handle.set_facecolor(map_color[n]) # set color based on phase to each voxel
         ax.set_title(f'Time: {n}/{n_time} ms') # set title with current time step
 
@@ -121,7 +132,7 @@ if save_flag == 1:
 
     # save
     writer = FFMpegWriter(fps=10, bitrate=1800)
-    anim.save('result/simulation movie.mp4', writer=writer)
+    anim.save('../result/simulation movie.mp4', writer=writer)
 
     print("movie saved as mp4")
 
@@ -131,85 +142,80 @@ if save_flag == 1:
 
 
 
-n_time = xyz.shape[1]
 
+# do_flag = 1
+# if do_flag == 1:
+#     print("display movie")
 
+#     # dictionary to store view angles for each frame
+#     view_angles = {}
 
+#     interval = 0.01
+#     plt.figure(figsize=(10, 8))
+#     ax = plt.axes(projection='3d')
+#     for n in range(n_time):
+#         print(n/n_time)
 
+#         ax.clear()
 
-do_flag = 1
-if do_flag == 1:
-    print("display movie")
-
-    # dictionary to store view angles for each frame
-    view_angles = {}
-
-    interval = 0.01
-    plt.figure(figsize=(10, 8))
-    ax = plt.axes(projection='3d')
-    for n in range(n_time):
-        print(n/n_time)
-
-        ax.clear()
-
-        ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], 
-                   c=voltage[:, n], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
+#         ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], 
+#                    c=voltage[:, n], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
             
-        # set title with current time step
-        ax.set_title(f'Time: {t[n]}/{t[-1]}')
+#         # set title with current time step
+#         ax.set_title(f'Time: {t[n]}/{t[-1]}')
         
-        # reset axis properties
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
-        fn_set_axes_equal.execute(ax)
-        ax.set_xlim([x_min, x_max])
-        ax.set_ylim([y_min, y_max])
-        ax.set_zlim([z_min, z_max])
+#         # reset axis properties
+#         ax.set_xlabel('X')
+#         ax.set_ylabel('Y')
+#         ax.set_zlabel('Z')
+#         fn_set_axes_equal.execute(ax)
+#         ax.set_xlim([x_min, x_max])
+#         ax.set_ylim([y_min, y_max])
+#         ax.set_zlim([z_min, z_max])
 
-        # capture current view angles
-        elev = ax.elev  # elevation angle
-        azim = ax.azim  # azimuth angle
-        view_angles[n] = {'elev': elev, 'azim': azim}
+#         # capture current view angles
+#         elev = ax.elev  # elevation angle
+#         azim = ax.azim  # azimuth angle
+#         view_angles[n] = {'elev': elev, 'azim': azim}
 
-        plt.pause(interval)
+#         plt.pause(interval)
 
-    # save simulation movie as mp4
-    do_flag = 1
-    if do_flag == 1:
-        print("saving movie as mp4")
+#     # save simulation movie as mp4
+#     do_flag = 1
+#     if do_flag == 1:
+#         print("saving movie as mp4")
 
-        fig = plt.figure(figsize=(10, 8))
-        ax = plt.axes(projection='3d')
+#         fig = plt.figure(figsize=(10, 8))
+#         ax = plt.axes(projection='3d')
 
-        def animate(n):
-            print(n/n_time)
+#         def animate(n):
+#             print(n/n_time)
 
-            ax.clear()
+#             ax.clear()
             
-            ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], 
-                    c=voltage[:, n], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
+#             ax.scatter(xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2], 
+#                     c=voltage[:, n], s=2, marker='.', alpha=1, cmap='coolwarm', vmin=v_min, vmax=v_max)
                 
-            # set title with current time step
-            ax.set_title(f'Time: {t[n]}/{t[-1]}')
+#             # set title with current time step
+#             ax.set_title(f'Time: {t[n]}/{t[-1]}')
             
-            # reset axis properties
-            ax.set_xlabel('X')
-            ax.set_ylabel('Y')
-            ax.set_zlabel('Z')
-            fn_set_axes_equal.execute(ax)
-            ax.set_xlim([x_min, x_max])
-            ax.set_ylim([y_min, y_max])
-            ax.set_zlim([z_min, z_max])
+#             # reset axis properties
+#             ax.set_xlabel('X')
+#             ax.set_ylabel('Y')
+#             ax.set_zlabel('Z')
+#             fn_set_axes_equal.execute(ax)
+#             ax.set_xlim([x_min, x_max])
+#             ax.set_ylim([y_min, y_max])
+#             ax.set_zlim([z_min, z_max])
 
-            # restore view angle to maintain user's rotation
-            ax.view_init(elev=view_angles[n]['elev'], azim=view_angles[n]['azim'])
+#             # restore view angle to maintain user's rotation
+#             ax.view_init(elev=view_angles[n]['elev'], azim=view_angles[n]['azim'])
 
-        anim = animation.FuncAnimation(fig, animate, frames=n_time, interval=10, blit=False, repeat=False)
-        # the interval parameter specifies the delay between frames in milliseconds
+#         anim = animation.FuncAnimation(fig, animate, frames=n_time, interval=10, blit=False, repeat=False)
+#         # the interval parameter specifies the delay between frames in milliseconds
 
-        # save
-        writer = FFMpegWriter(fps=10, bitrate=1800)
-        anim.save('../result/simulation movie.mp4', writer=writer)
+#         # save
+#         writer = FFMpegWriter(fps=10, bitrate=1800)
+#         anim.save('../result/simulation movie.mp4', writer=writer)
 
-        print("movie saved as mp4")
+#         print("movie saved as mp4")

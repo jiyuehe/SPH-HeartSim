@@ -3,7 +3,7 @@ import os
 import xml.etree.ElementTree as ET
 import numpy as np
 import matplotlib.pyplot as plt
-import fn_set_axes_equal
+import codes
 
 # %% load the xml file
 script_dir = os.path.dirname(os.path.abspath(__file__)) # get the path of the current script
@@ -58,7 +58,7 @@ if debug_plot == 1:
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     ax.set_box_aspect([1,1,1])
-    fn_set_axes_equal.execute(ax)
+    codes.set_axes_equal.execute(ax)
     plt.legend()
 
 # %% pacing site
@@ -96,5 +96,5 @@ ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
 ax.set_box_aspect([1,1,1])
-fn_set_axes_equal.execute(ax)
+codes.set_axes_equal.execute(ax)
 plt.show()
