@@ -85,34 +85,6 @@ class Heart : public ComplexShape
     }
 };
 
-// S2 pacing sites
-class ApplyStimulusCurrentSII : public LocalDynamics
-{
-  public:
-    explicit ApplyStimulusCurrentSII(SPHBody &sph_body)
-        : LocalDynamics(sph_body),
-          pos_(particles_->getVariableDataByName<Vec3d>("Position")),
-          voltage_(particles_->registerStateVariable<Real>("Voltage")) {};
-
-    void update(size_t index_i, Real dt)
-    {
-        if (0.0 <= pos_[index_i][0] && pos_[index_i][0] <= 6.0)
-        {
-            if (-6.0 <= pos_[index_i][1])
-            {
-                if (12.0 <= pos_[index_i][2])
-                {
-                    voltage_[index_i] = 0.95;
-                }
-            }
-        }
-    };
-
-  protected:
-    Vec3d *pos_;
-    Real *voltage_;
-};
-
 // Imposing diffusion boundary condition 
 class DiffusionBCs : public BaseLocalDynamics<BodyPartByParticle>
 {
@@ -381,10 +353,7 @@ int main(int ac, char *av[])
     // Solvers for ODE system.
     electro_physiology::ElectroPhysiologyReactionRelaxationForward reaction_relaxation_forward(physiology_heart, aliev_panfilow_model);
     electro_physiology::ElectroPhysiologyReactionRelaxationBackward reaction_relaxation_backward(physiology_heart, aliev_panfilow_model);
-    
-    // Apply the Iron stimulus.
-    SimpleDynamics<ApplyStimulusCurrentSII> apply_stimulus_s2(physiology_heart);
-    
+
     // Active mechanics.
     InteractionWithUpdate<LinearGradientCorrectionMatrixInner> correct_configuration_contraction(mechanics_body_inner);
     InteractionDynamics<CorrectInterpolationKernelWeights> correct_kernel_weights_for_interpolation(mechanics_body_contact);
@@ -451,7 +420,6 @@ int main(int ac, char *av[])
     if (geometry_flag == 1) { // ventricle
         s1_pacing_particle_id = {1, 2, 3, 4, 5};
     } else if (geometry_flag == 2) { // atrium
-        // s1_pacing_particle_id = {22563, 22564, 22581, 22582};
         s1_pacing_particle_id = {23403, 23409, 23410, 24111, 24112, 24113, 24118, 24119, 24120,
                             24125, 24126, 24127, 24131, 24132, 24791, 24792, 24798, 24799,
                             24805, 24806, 24807};
@@ -478,23 +446,36 @@ int main(int ac, char *av[])
                               << "	dt_s = " << dt_s << "\n";
                 }
                 
+                Real *voltage = physiology_heart.getBaseParticles().getVariableDataByName<Real>("Voltage");
+
                 // apply S1 pacing
                 if (physical_time >= 0 && physical_time <= 0.5)
                 {
-                    // set voltages directly using particle IDs
-                    Real *voltage = physiology_heart.getBaseParticles().getVariableDataByName<Real>("Voltage");
-                    for (int k = 0; k < s1_pacing_particle_id.size(); ++k) {
-                        int pid = s1_pacing_particle_id[k];
-                        // if (pid < physiology_heart.SizeOfLoopRange()) {
+                    for (size_t k = 0; k < s1_pacing_particle_id.size(); ++k) {
+                        size_t pid = s1_pacing_particle_id[k];
+                        if (pid < physiology_heart.SizeOfLoopRange())
                             voltage[pid] = 0.92;
-                        // }
                     }
                 }
 
                 // apply S2 pacing to induce spiral wave
-                if (apply_s2_flag == 1 && 60 <= physical_time &&  physical_time <= 65)
+                if (apply_s2_flag == 1 && physical_time >= 60 &&  physical_time <= 65)
                 {
-                	apply_stimulus_s2.exec(dt);
+                    Vec3d *position = physiology_heart.getBaseParticles().getVariableDataByName<Vec3d>("Position");
+                    size_t n_particles = physiology_heart.SizeOfLoopRange();
+
+                    for (size_t k = 0; k < n_particles; ++k) {
+                        if (position[k][0] >= 0.0 && position[k][0] <= 6.0)
+                        {
+                            if (position[k][1] >= -6.0)
+                            {
+                                if (position[k][2] >= 12.0)
+                                {
+                                    voltage[k] = 0.95;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // Strong splitting method. 
