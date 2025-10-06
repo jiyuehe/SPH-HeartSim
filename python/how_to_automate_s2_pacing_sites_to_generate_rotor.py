@@ -12,16 +12,6 @@ import matplotlib.pyplot as plt
 #    thus cannot find the correct u and h threshold for identifying a s2 pacing region.
 # 3. run this python file to find out the u and h threshold.
 
-# parameters for automatically find out s2 pacing regions. changes of these parameters will effect the rotor (location, shape, etc)
-# the time interval after s1 pacing
-s2_t = 60 
-
-# the min max of the action potential and h determines the shape of the s2 pacing region
-ap_min = (2.49 + 0.1) * 10**-7 # reference to np.min(action_potential_s2)
-ap_max = (3.057 - 0.1) * 10**-6 # reference to np.max(action_potential_s2
-h_min  = 0.015249441 + 0.003 # reference to np.min(h_s2)
-h_max  = 0.027622167 - 0.003 # reference to np.max(h_s2)
-
 #%%
 # --------------------------------------------------
 # load the rotor simulation figured out by manual trials and errors
@@ -34,6 +24,10 @@ t, voltage, gate_variable, stress, xyz = codes.load_simulation_result.execute(fo
 # voltage[particles, time_steps]
 # stress[particles, time_steps]
 # xyz[particles, time_steps, coordinates]
+
+# in SPHinXsys, the simulation t intervals are adaptive, thus need to find out the index for the time we want
+s2_t_ms = 60 # the time interval after s1 pacing
+s2_t = np.argmin(np.abs(t-s2_t_ms))
 
 #%%
 # the manually assigned pacing sites
@@ -79,6 +73,13 @@ codes.debug_display_of_s1s2_pacing_sites.execute(position, s1_pacing_particle_id
 
 #%%
 # --------------------------------------------------
+# parameters for automatically find out s2 pacing regions. changes of these parameters will effect the rotor (location, shape, etc)
+# the min max of the action potential and h determines the shape of the s2 pacing region
+ap_min = 0.000479918 # reference to np.min(action_potential_s2)
+ap_max = 0.947472798 # reference to np.max(action_potential_s2
+h_min  = 0.082594101 # reference to np.min(h_s2)
+h_max  = 2.402230333 # reference to np.max(h_s2)
+
 # automatically find s2 pacing voxels
 action_potential_s2_t = voltage[:,s2_t]
 h_s2_t = gate_variable[:,s2_t]

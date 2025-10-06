@@ -15,7 +15,7 @@ using namespace SPH;
 // settings
 // ------------------------------------------------------------
 int geometry_flag = 2; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
-Real end_time = 350; // simulation time, unit: ms
+Real end_time = 500; // simulation time, unit: ms
 int rotor_flag = 1; // 1: apply s2 pacing, 0: do not apply s2 pacing
 // ------------------------------------------------------------
 
@@ -432,12 +432,19 @@ int main(int ac, char *av[])
     // simulation computation
     double s1_t = 0.0; // ms
     double s2_t = s1_t + 60.0; // ms
-    double ap_min = 2.49 * 1e-7;
-    double ap_max = 3.057 * 1e-6;
-    double h_min = 0.015249441;
-    double h_max = 0.027622167;
-    double pacing_duration = 0.5; // ms
+    double ap_min = 0.000479918;
+    double ap_max = 0.947472798;
+    double h_min = 0.082594101;
+    double h_max = 2.402230333;
 
+    Real *voltage = physiology_heart.getBaseParticles().getVariableDataByName<Real>("Voltage");
+    Real *voltage_prev = physiology_heart.getBaseParticles().registerStateVariable<Real>("Voltage_prev");
+    Real *h = physiology_heart.getBaseParticles().getVariableDataByName<Real>("GateVariable");
+    Real *h_prev = physiology_heart.getBaseParticles().registerStateVariable<Real>("h_prev");
+    size_t n_particles = physiology_heart.SizeOfLoopRange();
+    for (size_t i = 0; i < n_particles; ++i) voltage_prev[i] = voltage[i]; // initialize prev to current
+
+    int debug_display = 1;
     while (physical_time < end_time)
     {
         Real integration_time = 0.0;
@@ -446,6 +453,9 @@ int main(int ac, char *av[])
             Real relaxation_time = 0.0;
             while (relaxation_time < Observer_time)
             {
+                for (size_t i = 0; i < n_particles; ++i) voltage_prev[i] = voltage[i];
+                for (size_t i = 0; i < n_particles; ++i) h_prev[i] = h[i];
+
                 if (ite % screen_output_interval == 0)
                 {
                     std::cout << std::fixed << std::setprecision(9) << "N=" << ite << "	Time = "
@@ -454,10 +464,10 @@ int main(int ac, char *av[])
                               << "	dt_s = " << dt_s << "\n";
                 }
                 
-                Real *voltage = physiology_heart.getBaseParticles().getVariableDataByName<Real>("Voltage");
-
                 // apply S1 pacing
-                if (physical_time >= s1_t && physical_time <= s1_t + pacing_duration){
+                if (physical_time >= s1_t && physical_time <= s1_t + 0.5){
+                    // std::cout << "apply s1 pacing" << std::endl;
+
                     for (size_t k = 0; k < s1_pacing_particle_id.size(); ++k){
                         size_t pid = s1_pacing_particle_id[k];
                         voltage[pid] = 0.92;
@@ -465,9 +475,8 @@ int main(int ac, char *av[])
                 }
 
                 // apply S2 pacing to induce spiral wave
-                if (rotor_flag == 1 && physical_time >= s2_t &&  physical_time <= s2_t + pacing_duration){
-                    Real *h = physiology_heart.getBaseParticles().getVariableDataByName<Real>("GateVariable");
-                    size_t n_particles = physiology_heart.SizeOfLoopRange();
+                if (rotor_flag == 1 && physical_time >= s2_t &&  physical_time <= s2_t + 5){
+                    std::cout << "apply s2 pacing" << std::endl;
 
                     // for (size_t k = 0; k < n_particles; ++k) {
                     //     if (position[k][0] >= 0.0 && position[k][0] <= 6.0){
@@ -481,14 +490,14 @@ int main(int ac, char *av[])
 
                     std::vector<int> id1;
                     for (int i = 0; i < n_particles; ++i) {
-                        if (voltage[i] >= ap_min && voltage[i] <= ap_max) {
+                        if (voltage_prev[i] >= ap_min && voltage_prev[i] <= ap_max) {
                             id1.push_back(i);
                         }
                     }
 
                     std::vector<int> id2;
                     for (int i = 0; i < n_particles; ++i) {
-                        if (h[i] >= h_min && h[i] <= h_max) {
+                        if (h_prev[i] >= h_min && h_prev[i] <= h_max) {
                             id2.push_back(i);
                         }
                     }
@@ -502,6 +511,13 @@ int main(int ac, char *av[])
                         id2.begin(), id2.end(),
                         std::back_inserter(s2_pacing_particle_id)
                     );
+
+                    debug_display = 0;
+                    if (debug_display == 1){
+                        std::cout << "Intersection: ";
+                        for (int x : s2_pacing_particle_id) std::cout << x << " ";
+                        std::cout << std::endl;
+                    }
 
                     for (size_t k = 0; k < s2_pacing_particle_id.size(); ++k){
                         size_t pid = s2_pacing_particle_id[k];
