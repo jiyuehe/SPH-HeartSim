@@ -85,45 +85,6 @@ class Heart : public ComplexShape
     }
 };
 
-// S1 pacing sites
-class ApplyStimulusCurrentSI : public LocalDynamics
-{
-  public:
-    explicit ApplyStimulusCurrentSI(SPHBody &sph_body)
-        : LocalDynamics(sph_body),
-          pos_(particles_->getVariableDataByName<Vec3d>("Position")),
-          voltage_(particles_->registerStateVariable<Real>("Voltage")) 
-    {
-        
-    };
-
-    void update(long unsigned int index_i, double dt)
-    {
-        std::vector<long unsigned int> pacing_particle_ids_ = {};
-
-        if (geometry_flag == 1) { // ventricle
-            pacing_particle_ids_ = {1, 2, 3, 4, 5};
-        } else if (geometry_flag == 2) { // atrium
-            pacing_particle_ids_ = {22563, 22564, 22581, 22582};
-        } else if (geometry_flag == 3) { // slab
-            pacing_particle_ids_ = {1, 2, 3, 4, 5};
-        } else if (geometry_flag == 4) { // rabbit heart
-            pacing_particle_ids_ = {24710, 24720, 24721, 24732, 25743, 25744, 25755};
-        }
-
-        // apply the pacing if the particle is a pacing particle
-        for (int i=0; i<pacing_particle_ids_.size(); ++i) {
-            if (index_i == pacing_particle_ids_[i]) {
-                voltage_[index_i] = 0.92;
-            }
-        }
-    };
-
-  protected:
-    Vec3d *pos_;
-    Real *voltage_;
-};
-
 // S2 pacing sites
 class ApplyStimulusCurrentSII : public LocalDynamics
 {
@@ -422,7 +383,6 @@ int main(int ac, char *av[])
     electro_physiology::ElectroPhysiologyReactionRelaxationBackward reaction_relaxation_backward(physiology_heart, aliev_panfilow_model);
     
     // Apply the Iron stimulus.
-    SimpleDynamics<ApplyStimulusCurrentSI> apply_stimulus_s1(physiology_heart);
     SimpleDynamics<ApplyStimulusCurrentSII> apply_stimulus_s2(physiology_heart);
     
     // Active mechanics.
@@ -487,6 +447,20 @@ int main(int ac, char *av[])
     TimeInterval interval;
     std::cout << "Main Loop Starts Here : " << "\n";
     
+    std::vector<long unsigned int> s1_pacing_particle_id = {};
+    if (geometry_flag == 1) { // ventricle
+        s1_pacing_particle_id = {1, 2, 3, 4, 5};
+    } else if (geometry_flag == 2) { // atrium
+        // s1_pacing_particle_id = {22563, 22564, 22581, 22582};
+        s1_pacing_particle_id = {23403, 23409, 23410, 24111, 24112, 24113, 24118, 24119, 24120,
+                            24125, 24126, 24127, 24131, 24132, 24791, 24792, 24798, 24799,
+                            24805, 24806, 24807};
+    } else if (geometry_flag == 3) { // slab
+        s1_pacing_particle_id = {1, 2, 3, 4, 5};
+    } else if (geometry_flag == 4) { // rabbit heart
+        s1_pacing_particle_id = {24710, 24720, 24721, 24732, 25743, 25744, 25755};
+    }
+
     // simulation computation
     while (physical_time < end_time)
     {
@@ -505,9 +479,16 @@ int main(int ac, char *av[])
                 }
                 
                 // apply S1 pacing
-                if (0 <= physical_time && physical_time <= 0.5)
+                if (physical_time >= 0 && physical_time <= 0.5)
                 {
-                    apply_stimulus_s1.exec(dt);
+                    // set voltages directly using particle IDs
+                    Real *voltage = physiology_heart.getBaseParticles().getVariableDataByName<Real>("Voltage");
+                    for (int k = 0; k < s1_pacing_particle_id.size(); ++k) {
+                        int pid = s1_pacing_particle_id[k];
+                        // if (pid < physiology_heart.SizeOfLoopRange()) {
+                            voltage[pid] = 0.92;
+                        // }
+                    }
                 }
 
                 // apply S2 pacing to induce spiral wave

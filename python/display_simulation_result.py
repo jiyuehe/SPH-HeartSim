@@ -112,7 +112,7 @@ for n in range(n_time):
     plt.pause(pause_interval)
 
 # save simulation movie as mp4
-save_flag = 1
+save_flag = 0
 if save_flag == 1:
     print("saving movie as mp4")
 
