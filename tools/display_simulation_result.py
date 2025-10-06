@@ -17,7 +17,7 @@ t, voltage, stress, xyz = fn_load_simulation_result.execute(folder_path)
 # stress[particles, time_steps]
 # xyz[particles, time_steps, coordinates]
 
-debug_plot = 1
+debug_plot = 0
 if debug_plot == 1:
     # plot the action potential voltage of a particle
     particle_id = 1800
@@ -38,12 +38,17 @@ if debug_plot == 1:
 
     # plot a coordinate axis movements of a particle
     x_coordinate = [xyz[particle_id][time][0] for time in range(len(xyz[particle_id]))]
-    plt.figure()
-    plt.plot(t, x_coordinate, 'b-', linewidth=1)
-    plt.xlabel('time, unit: ms')
-    plt.ylabel('x coordinate')
-    plt.title('x Coordinate vs Time of a Particle')
-    plt.savefig('../result/x_coordinate_of_a_particle.png')
+    y_coordinate = [xyz[particle_id][time][1] for time in range(len(xyz[particle_id]))]
+    z_coordinate = [xyz[particle_id][time][2] for time in range(len(xyz[particle_id]))]
+    fig, axs = plt.subplots(3, 1, figsize=(8, 10), sharex=True)
+    axs[0].plot(t, x_coordinate, 'r-', linewidth=1)
+    axs[0].set_title('x coordinate movement')
+    axs[1].plot(t, y_coordinate, 'g-', linewidth=1)
+    axs[1].set_title('y coordinate movement')
+    axs[2].plot(t, z_coordinate, 'b-', linewidth=1)
+    axs[2].set_title('z coordinate movement')
+    axs[2].set_xlabel('time, ms')
+    plt.savefig('../result/movement_of_a_particle.png')
 
     plt.show()
 
