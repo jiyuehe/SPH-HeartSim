@@ -16,7 +16,7 @@ using namespace SPH;
 // ------------------------------------------------------------
 int geometry_flag = 2; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
 Real end_time = 350; // simulation time, unit: ms
-int apply_s2_flag = 0; // 1: apply s2 pacing, 0: do not apply s2 pacing
+int rotor_flag = 1; // 1: apply s2 pacing, 0: do not apply s2 pacing
 // ------------------------------------------------------------
 
 std::string full_path_to_stl_file;
@@ -430,6 +430,14 @@ int main(int ac, char *av[])
     }
 
     // simulation computation
+    double s1_t = 0.0; // ms
+    double s2_t = s1_t + 60.0; // ms
+    double ap_min = 2.49 * 1e-7;
+    double ap_max = 3.057 * 1e-6;
+    double h_min = 0.015249441;
+    double h_max = 0.027622167;
+    double pacing_duration = 0.5; // ms
+
     while (physical_time < end_time)
     {
         Real integration_time = 0.0;
@@ -449,27 +457,55 @@ int main(int ac, char *av[])
                 Real *voltage = physiology_heart.getBaseParticles().getVariableDataByName<Real>("Voltage");
 
                 // apply S1 pacing
-                if (physical_time >= 0 && physical_time <= 0.5){
+                if (physical_time >= s1_t && physical_time <= s1_t + pacing_duration){
                     for (size_t k = 0; k < s1_pacing_particle_id.size(); ++k){
                         size_t pid = s1_pacing_particle_id[k];
-                        if (pid < physiology_heart.SizeOfLoopRange())
-                            voltage[pid] = 0.92;
+                        voltage[pid] = 0.92;
                     }
                 }
 
                 // apply S2 pacing to induce spiral wave
-                if (apply_s2_flag == 1 && physical_time >= 60 &&  physical_time <= 65){
-                    Vec3d *position = physiology_heart.getBaseParticles().getVariableDataByName<Vec3d>("Position");
+                if (rotor_flag == 1 && physical_time >= s2_t &&  physical_time <= s2_t + pacing_duration){
+                    Real *h = physiology_heart.getBaseParticles().getVariableDataByName<Real>("GateVariable");
                     size_t n_particles = physiology_heart.SizeOfLoopRange();
 
-                    for (size_t k = 0; k < n_particles; ++k) {
-                        if (position[k][0] >= 0.0 && position[k][0] <= 6.0){
-                            if (position[k][1] >= -6.0){
-                                if (position[k][2] >= 12.0){
-                                    voltage[k] = 0.95;
-                                }
-                            }
+                    // for (size_t k = 0; k < n_particles; ++k) {
+                    //     if (position[k][0] >= 0.0 && position[k][0] <= 6.0){
+                    //         if (position[k][1] >= -6.0){
+                    //             if (position[k][2] >= 12.0){
+                    //                 voltage[k] = 0.95;
+                    //             }
+                    //         }
+                    //     }
+                    // }
+
+                    std::vector<int> id1;
+                    for (int i = 0; i < n_particles; ++i) {
+                        if (voltage[i] >= ap_min && voltage[i] <= ap_max) {
+                            id1.push_back(i);
                         }
+                    }
+
+                    std::vector<int> id2;
+                    for (int i = 0; i < n_particles; ++i) {
+                        if (h[i] >= h_min && h[i] <= h_max) {
+                            id2.push_back(i);
+                        }
+                    }
+
+                    // Find intersection of id1 and id2
+                    std::vector<int> s2_pacing_particle_id;
+                    std::sort(id1.begin(), id1.end());
+                    std::sort(id2.begin(), id2.end());
+                    std::set_intersection(
+                        id1.begin(), id1.end(),
+                        id2.begin(), id2.end(),
+                        std::back_inserter(s2_pacing_particle_id)
+                    );
+
+                    for (size_t k = 0; k < s2_pacing_particle_id.size(); ++k){
+                        size_t pid = s2_pacing_particle_id[k];
+                        voltage[pid] = 0.92;
                     }
                 }
 

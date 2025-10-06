@@ -30,6 +30,7 @@ def execute(folder_path):
     # load the electro-mechanical simulation result
     xyz_temp = []
     voltage_temp = []
+    gate_variable_temp = []
     stress_temp = []
     for file_name in file_names_sorted:
         tree = ET.parse(folder_path + file_name)
@@ -57,6 +58,17 @@ def execute(folder_path):
         data = np.array(list(map(float, text_data)), dtype=float)
         voltage_temp.append(data)
 
+        # load the gate variable of the particles
+        data_array = None
+        for da in root.iter("DataArray"):
+            if da.attrib.get("Name") == "GateVariable":
+                data_array = da
+                break
+
+        text_data = data_array.text.strip().split() # extract the ASCII text values
+        data = np.array(list(map(float, text_data)), dtype=float)
+        gate_variable_temp.append(data)
+
         # load stress of the particles
         data_array = None
         for da in root.iter("DataArray"):
@@ -71,6 +83,7 @@ def execute(folder_path):
     # %% save data in time series
     t = np.array(numbers_sorted) / 1000000  # time in ms
     voltage = np.array(voltage_temp).T # .T is transpose
+    gate_variable = np.array(gate_variable_temp).T
     stress = np.array(stress_temp).T
     xyz = np.array(xyz_temp).transpose(1, 0, 2) # xyz[particles, time_steps, coordinates]
         # .transpose(1, 0, 2) means:
@@ -108,4 +121,4 @@ def execute(folder_path):
         plt.title('x Coordinate vs Time of a Particle')
         # plt.savefig('/home/j/Desktop/x_coordinate_of_a_particle.png')
 
-    return t, voltage, stress, xyz
+    return t, voltage, gate_variable, stress, xyz

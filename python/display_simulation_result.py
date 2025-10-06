@@ -14,7 +14,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__)) # get the path of the cu
 os.chdir(script_dir) # change the working directory
 
 folder_path = "../build/sim/bin/output/"
-t, voltage, stress, xyz = codes.load_simulation_result.execute(folder_path)
+t, voltage, gate_variable, stress, xyz = codes.load_simulation_result.execute(folder_path)
 # t[time_id]
 # voltage[particles, time_steps]
 # stress[particles, time_steps]
@@ -22,14 +22,23 @@ t, voltage, stress, xyz = codes.load_simulation_result.execute(folder_path)
 
 debug_plot = 0
 if debug_plot == 1:
-    # plot the action potential voltage of a particle
     particle_id = 1800
+
+    # plot the action potential voltage of a particle
     plt.figure()
     plt.plot(t, voltage[particle_id], 'b-', linewidth=1)
     plt.xlabel('time, unit: ms')
     plt.ylabel('voltage')
     plt.title('Voltage Over Time of a Particle')
     plt.savefig('../result/voltage_of_a_particle.png')
+
+    # plot the gate variable of a particle
+    plt.figure()
+    plt.plot(t, gate_variable[particle_id], 'b-', linewidth=1)
+    plt.xlabel('time, unit: ms')
+    plt.ylabel('gate variable')
+    plt.title('Gate Variable Over Time of a Particle')
+    plt.savefig('../result/gate_variable_of_a_particle.png')
 
     # plot the mechanical stress of a particle
     plt.figure()
@@ -102,7 +111,7 @@ for n in range(n_time):
     plot_handle._offsets3d = (xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2]) # update voxels positions
 
     plot_handle.set_facecolor(map_color[n]) # set color based on phase to each voxel
-    ax.set_title(f'Time: {n}/{n_time} ms') # set title with current time step
+    ax.set_title(f'Time: {round(t[n])}/{round(t[n_time-1])} ms') # set title with current time step
 
     # capture current view angles
     elev = ax.elev  # elevation angle
@@ -123,7 +132,7 @@ if save_flag == 1:
         plot_handle._offsets3d = (xyz[:, n, 0], xyz[:, n, 1], xyz[:, n, 2]) # update voxels positions
 
         plot_handle.set_facecolor(map_color[n]) # set color based on phase to each voxel
-        ax.set_title(f'Time: {n}/{n_time} ms') # set title with current time step
+        ax.set_title(f'Time: {round(t[n])}/{round(t[n_time-1])} ms') # set title with current time step
 
         ax.view_init(elev=view_angles[n]['elev'], azim=view_angles[n]['azim']) # restore view angle
 
