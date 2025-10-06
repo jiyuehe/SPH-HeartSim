@@ -449,9 +449,8 @@ int main(int ac, char *av[])
                 Real *voltage = physiology_heart.getBaseParticles().getVariableDataByName<Real>("Voltage");
 
                 // apply S1 pacing
-                if (physical_time >= 0 && physical_time <= 0.5)
-                {
-                    for (size_t k = 0; k < s1_pacing_particle_id.size(); ++k) {
+                if (physical_time >= 0 && physical_time <= 0.5){
+                    for (size_t k = 0; k < s1_pacing_particle_id.size(); ++k){
                         size_t pid = s1_pacing_particle_id[k];
                         if (pid < physiology_heart.SizeOfLoopRange())
                             voltage[pid] = 0.92;
@@ -459,18 +458,14 @@ int main(int ac, char *av[])
                 }
 
                 // apply S2 pacing to induce spiral wave
-                if (apply_s2_flag == 1 && physical_time >= 60 &&  physical_time <= 65)
-                {
+                if (apply_s2_flag == 1 && physical_time >= 60 &&  physical_time <= 65){
                     Vec3d *position = physiology_heart.getBaseParticles().getVariableDataByName<Vec3d>("Position");
                     size_t n_particles = physiology_heart.SizeOfLoopRange();
 
                     for (size_t k = 0; k < n_particles; ++k) {
-                        if (position[k][0] >= 0.0 && position[k][0] <= 6.0)
-                        {
-                            if (position[k][1] >= -6.0)
-                            {
-                                if (position[k][2] >= 12.0)
-                                {
+                        if (position[k][0] >= 0.0 && position[k][0] <= 6.0){
+                            if (position[k][1] >= -6.0){
+                                if (position[k][2] >= 12.0){
                                     voltage[k] = 0.95;
                                 }
                             }
@@ -481,8 +476,7 @@ int main(int ac, char *av[])
                 // Strong splitting method. 
                 // forward reaction
                 int ite_forward = 0;
-                while (ite_forward < reaction_step)
-                {
+                while (ite_forward < reaction_step){
                     reaction_relaxation_forward.exec(0.5 * dt / Real(reaction_step));
                     ite_forward++;
                 }
@@ -492,8 +486,7 @@ int main(int ac, char *av[])
 
                 // backward reaction
                 int ite_backward = 0;
-                while (ite_backward < reaction_step)
-                {
+                while (ite_backward < reaction_step){
                     reaction_relaxation_backward.exec(0.5 * dt / Real(reaction_step));
                     ite_backward++;
                 }
@@ -501,8 +494,7 @@ int main(int ac, char *av[])
                 active_stress_interpolation.exec();
 
                 Real dt_s_sum = 0.0;
-                while (dt_s_sum < dt)
-                {
+                while (dt_s_sum < dt){
                     dt_s = get_mechanics_time_step.exec();
                     if (dt - dt_s_sum < dt_s)
                         dt_s = dt - dt_s_sum;
