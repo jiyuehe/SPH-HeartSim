@@ -11,9 +11,6 @@ import matplotlib.pyplot as plt
 # xyz[particles, time_steps, coordinates]
 
 def execute(folder_path):
-    script_dir = os.path.dirname(os.path.abspath(__file__)) # get the path of the current script
-    os.chdir(script_dir) # change the working directory
-
     # %% find all the simulation output files
     all_files = os.listdir(folder_path)
     file_names = [f for f in all_files if f.startswith("PhysiologyHeart_")]

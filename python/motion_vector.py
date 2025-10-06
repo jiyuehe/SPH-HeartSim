@@ -1,12 +1,15 @@
 # %%
+import os
 import matplotlib.pyplot as plt
 import numpy as np
-import fn_load_simulation_result # function of loading simulation results
-import fn_set_axes_equal
+import codes
 
 # %%
+script_dir = os.path.dirname(os.path.abspath(__file__)) # get the path of the current script
+os.chdir(script_dir) # change the working directory
+
 folder_path = "../build/sim/bin/output/"
-t, voltage, stress, xyz = fn_load_simulation_result.execute(folder_path)
+t, voltage, stress, xyz = codes.load_simulation_result.execute(folder_path)
 # t[time_id]
 # voltage[particles, time_steps]
 # stress[particles, time_steps]
@@ -26,7 +29,7 @@ if debug_plot == 1:
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     ax.set_box_aspect([1,1,1])
-    fn_set_axes_equal.execute(ax)
+    codes.set_axes_equal.execute(ax)
     plt.show()
 
 # %%
@@ -52,7 +55,7 @@ if debug_plot == 1:
     ax.set_zlabel("Z")
     ax.set_title("Motion vectors")
     ax.set_box_aspect([1,1,1])  # equal scale for x, y, z (this does not work)
-    fn_set_axes_equal.execute(ax)
+    codes.set_axes_equal.execute(ax)
     plt.show()
 
 # %%
