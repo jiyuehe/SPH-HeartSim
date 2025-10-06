@@ -16,7 +16,7 @@ using namespace SPH;
 // ------------------------------------------------------------
 int geometry_flag = 2; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
 Real end_time = 350; // simulation time, unit: ms
-int apply_s2_flag = 1; // 1: apply s2 pacing, 0: do not apply s2 pacing
+int apply_s2_flag = 0; // 1: apply s2 pacing, 0: do not apply s2 pacing
 // ------------------------------------------------------------
 
 std::string full_path_to_stl_file;
