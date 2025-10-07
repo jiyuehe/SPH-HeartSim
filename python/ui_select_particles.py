@@ -7,12 +7,10 @@ from matplotlib.path import Path
 
 #%%
 class MeshSelector:
-    def __init__(self, vertices, faces, data_path, vertex_flag, vertex_color):
-        self.vertices = vertices
-        self.faces = faces
-        self.data_path = data_path
-        self.vertex_flag = vertex_flag
-        self.vertex_color = vertex_color
+    def __init__(self, particle, particle_flag, folder_path):
+        self.particle = particle
+        self.particle_flag = particle_flag
+        self.folder_path = folder_path
         
         # Define color map for different flags
         color_map = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'orange', 'purple']
@@ -25,21 +23,14 @@ class MeshSelector:
         # Create figure and 3D axis
         self.fig = plt.figure(figsize=(12, 8))
         self.ax = self.fig.add_subplot(111, projection='3d')
-        
-        # Plot the mesh
-        self.mesh = self.ax.plot_trisurf(
-            self.vertices[:, 0], self.vertices[:, 1], self.vertices[:, 2],
-            triangles=self.faces,
-            linewidth=0.2, edgecolor='gray', alpha=0, color='white'
-        )
 
-        self.flagged_scatter = self.ax.scatter([], [], [], c=[], s=5, depthshade=False, marker='.')
+        self.scatter = self.ax.scatter(self.particle[:, 0], self.particle[:, 1], self.particle[:, 2], c='grey', s=5, depthshade=False, marker='.')
 
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
         self.ax.set_zlabel('Z')
         codes.set_axes_equal.execute(self.ax)
-        self.ax.set_title('3D Mesh Vertex Selection Tool')
+        self.ax.set_title('3D Particle Selection Tool')
         self.update_display()
 
         # Connect mouse events
@@ -60,7 +51,7 @@ class MeshSelector:
 
         # Instructions
         self.fig.text(0.5, 0.02, 
-            'Press "a" to toggle Rotate/Select mode | Mouse left drag: Add vertices to selection | Right click: Clear all selected',
+            'Press "a" to toggle Rotate/Select mode | Mouse left drag: Add particles to selection | Right click: Clear all selected',
             ha='center', fontsize=10, bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
         
         self.mode_text = self.fig.text(0.5, 0.95, 'Mode: Rotate (press "a" change to Select)', 
@@ -70,19 +61,15 @@ class MeshSelector:
         plt.show()
 
     def update_display(self):
-        # Highlight selected vertices (where flag > 0) with different colors
-        flagged_idx = np.where(self.vertex_flag > 0)[0]
-        if len(flagged_idx) == 0:
-            self.flagged_scatter._offsets3d = ([], [], [])
-            self.flagged_scatter.set_facecolor([])
-        else:
-            verts = self.vertices[flagged_idx]
-            print(verts)
-            colors = []
-            for idx in flagged_idx:
-                colors.append(self.color_map[(self.vertex_flag[idx]-1) % len(self.color_map)])
-            self.flagged_scatter._offsets3d = (verts[:,0], verts[:,1], verts[:,2])
-            self.flagged_scatter.set_color(colors)
+        N = self.particle.shape[0] # number of particles
+        colors = ['grey'] * N # color for those not selected
+
+        # assign colors to different flags
+        flagged_id = np.where(self.particle_flag > 0)[0]
+        for id in flagged_id:
+            colors[id] = self.color_map[(self.particle_flag[id] - 1) % len(self.color_map)]
+
+        self.scatter.set_color(colors)
 
     def on_press(self, event):
         # Handle mouse press events
@@ -93,7 +80,7 @@ class MeshSelector:
             self.is_selecting = True
             self.selection_polygon = [(event.xdata, event.ydata)]
         elif event.button == 3: # Right click - clear all selections
-            self.vertex_flag = np.zeros(len(self.vertices), dtype=int)
+            self.particle_flag = np.zeros(len(self.particle), dtype=int)
             self.selection_polygon = []
             self.update_display()
             print("All selections cleared")
@@ -123,8 +110,8 @@ class MeshSelector:
         # Close the polygon
         self.selection_polygon.append(self.selection_polygon[0])
         
-        # Project vertices to 2D screen coordinates and update flags
-        self.select_vertices_in_polygon()
+        # Project particle to 2D screen coordinates and update flags
+        self.select_particle_in_polygon()
         
         # Clear polygon and redraw
         self.selection_polygon = []
@@ -139,7 +126,7 @@ class MeshSelector:
                 self.mode_text.set_bbox(dict(boxstyle='round', facecolor='yellow', alpha=0.8))
                 # Disable 3D rotation
                 self.ax.disable_mouse_rotation()
-                print("Selection mode ON - Click and drag to add vertices to selection")
+                print("Selection mode ON - Click and drag to add particles to selection")
             else:
                 self.mode_text.set_text('Mode: Rotate (press "a" change to Select)')
                 self.mode_text.set_bbox(dict(boxstyle='round', facecolor='lightgreen', alpha=0.8))
@@ -150,17 +137,17 @@ class MeshSelector:
     
     def save_selection(self, event):
         # Save vertex flag array to a numpy file
-        num_selected = np.sum(self.vertex_flag)
+        num_selected = np.sum(self.particle_flag)
         if num_selected == 0:
-            print("No vertices selected to save!")
+            print("No particle selected to save!")
             return
         
-        filename = 'vertex_flag.npy'
-        np.save(self.data_path + filename, self.vertex_flag)
-        print(f"Saved vertex flags to '{filename}' ({num_selected} vertices selected)")
+        filename = 'particle_flag.npy'
+        np.save(self.folder_path + filename, self.particle_flag)
+        print(f"Saved vertex flags to '{filename}' ({num_selected} particles selected)")
     
-    def select_vertices_in_polygon(self):
-        # Select vertices that fall within the drawn polygon (front face only)
+    def select_particle_in_polygon(self):
+        # Select particle that fall within the drawn polygon (front face only)
         # and set their flags to the current flag value (accumulative)
         if len(self.selection_polygon) < 3:
             return
@@ -171,10 +158,10 @@ class MeshSelector:
         # Get the current 3D to 2D projection matrix
         proj_matrix = self.ax.get_proj()
         
-        # Transform 3D vertices to 2D display coordinates and get depths
-        vertices_2d = []
+        # Transform 3D particle to 2D display coordinates and get depths
+        particle_2d = []
         depths = []
-        for vertex in self.vertices:
+        for vertex in self.particle:
             vec = np.array([vertex[0], vertex[1], vertex[2], 1.0])
             proj = proj_matrix @ vec
             
@@ -187,17 +174,17 @@ class MeshSelector:
                 y_2d = proj[1]
                 z_depth = proj[2]
             
-            vertices_2d.append([x_2d, y_2d])
+            particle_2d.append([x_2d, y_2d])
             depths.append(z_depth)
         
-        vertices_2d = np.array(vertices_2d)
+        particle_2d = np.array(particle_2d)
         depths = np.array(depths)
         
         # Create a path from the selection polygon
         path = Path(self.selection_polygon)
         
-        # Check which vertices are inside the polygon
-        inside = path.contains_points(vertices_2d)
+        # Check which particle are inside the polygon
+        inside = path.contains_points(particle_2d)
         
         # For each vertex inside, check if it's visible (front-facing)
         inside_indices = np.where(inside)[0]
@@ -207,12 +194,12 @@ class MeshSelector:
             front_facing = np.abs(depths - min_depth) < tol
             inside = inside & front_facing
         
-        # Update vertex flags for newly selected vertices
-        newly_selected = np.sum(inside & (self.vertex_flag == 0))
-        self.vertex_flag[inside] = flag_value
+        # Update vertex flags for newly selected particle
+        newly_selected = np.sum(inside & (self.particle_flag == 0))
+        self.particle_flag[inside] = flag_value
         
-        total_selected = np.sum(self.vertex_flag > 0)
-        print(f"Set {np.sum(inside)} vertices to flag {flag_value} (total selected: {total_selected})")
+        total_selected = np.sum(self.particle_flag > 0)
+        print(f"Set {np.sum(inside)} particles to flag {flag_value} (total selected: {total_selected})")
 
 #%%
 if __name__ == "__main__":
@@ -233,8 +220,16 @@ if __name__ == "__main__":
     else: # file do not exist
         particle_flag = np.zeros(len(particle), dtype=int)
 
-    particle_color = np.ones((len(particle_flag), 3))  # shape (11, 3), all ones
+    np.set_printoptions(threshold=np.inf) # disable summarization, print out all elements
 
-    selector = MeshSelector(vertex, face, data_path, vertex_flag, vertex_color)
+    s1_pacing_particle_id = np.where(particle_flag == 1)[0]
+    print('s1 pacing particles: ')
+    print(", ".join(map(str, s1_pacing_particle_id))) # "," in between elements
+
+    s2_pacing_particle_id = np.where(particle_flag == 2)[0]
+    print('s2 pacing particles: ')
+    print(", ".join(map(str, s2_pacing_particle_id))) # "," in between elements
+
+    selector = MeshSelector(particle, particle_flag, folder_path)
 
 # %%

@@ -419,18 +419,18 @@ int main(int ac, char *av[])
     if (geometry_flag == 1) { // ventricle
         s1_pacing_particle_id = {1, 2, 3, 4, 5};
     } else if (geometry_flag == 2) { // atrium
-        s1_pacing_particle_id = {23403};
+        s1_pacing_particle_id = {6743, 6754, 7216, 7227, 7238, 7690};
     } else if (geometry_flag == 3) { // slab
         s1_pacing_particle_id = {1, 2, 3, 4, 5};
     } else if (geometry_flag == 4) { // rabbit heart
         s1_pacing_particle_id = {24710, 24720, 24721, 24732, 25743, 25744, 25755};
     }
 
-    int rotor_flag = 0; // 1: apply s2 pacing, 0: do not apply s2 pacing
+    int rotor_flag = 1; // 1: apply s2 pacing, 0: do not apply s2 pacing
 
     // simulation computation
     double s1_t = 0.0; // ms
-    double s2_t = s1_t + 60.0; // ms
+    double s2_t = s1_t + 50.0; // ms
     double ap_min = 0.000479918;
     double ap_max = 0.947472798;
     double h_min = 0.082594101;
@@ -487,6 +487,7 @@ int main(int ac, char *av[])
                     //     }
                     // }
 
+                    /*
                     std::vector<int> id1;
                     for (int i = 0; i < n_particles; ++i) {
                         if (voltage_prev[i] >= ap_min && voltage_prev[i] <= ap_max) {
@@ -517,6 +518,10 @@ int main(int ac, char *av[])
                         for (int x : s2_pacing_particle_id) std::cout << x << " ";
                         std::cout << std::endl;
                     }
+                    */
+                    
+                    std::vector<int> s2_pacing_particle_id;
+                    s2_pacing_particle_id = {11071, 11082, 11093, 11104, 11562, 11593, 11594, 12047, 12057, 12067, 12088, 12089, 12101, 12511, 12521, 12531, 12541, 12552, 12563, 12574, 12991, 13002, 13012, 13022, 13032, 13043, 13054, 13482, 13491, 13500, 13510, 13520, 13530, 13540, 13983, 13994, 14013, 14024};
 
                     for (size_t k = 0; k < s2_pacing_particle_id.size(); ++k){
                         size_t pid = s2_pacing_particle_id[k];
