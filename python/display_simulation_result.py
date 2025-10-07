@@ -20,6 +20,7 @@ t, voltage, gate_variable, stress, xyz = codes.load_simulation_result.execute(fo
 # stress[particles, time_steps]
 # xyz[particles, time_steps, coordinates]
 
+#%%
 debug_plot = 0
 if debug_plot == 1:
     particle_id = 1800
@@ -64,9 +65,26 @@ if debug_plot == 1:
 
     plt.show()
 
-# %% display simulation movie
-movie_data = voltage
+# create phase from action potential
+action_potential = voltage
+v_gate = 0.13
+action_potential_phase = np.zeros_like(action_potential)
+activation_phase = np.zeros_like(action_potential)
+for id in range(action_potential.shape[0]):
+    if ((id+1) % (action_potential.shape[0]//5)) == 0:
+        print(f'compute phase {(id+1)/action_potential.shape[0]*100:.1f}%')
+    action_potential_phase[id,:], activation_phase[id,:] = codes.create_phase.execute(action_potential[id,:], v_gate)
 
+debug_plot = 0
+if debug_plot == 1:
+    plt.figure()
+    plt.plot(action_potential[1,:], 'b')
+    plt.plot(action_potential_phase[1,:], 'g')
+    plt.tight_layout()
+    plt.show()
+
+# %% display simulation movie
+movie_data = action_potential_phase
 data_min = np.min(movie_data)
 data_max = np.max(movie_data)
 data_threshold = data_min

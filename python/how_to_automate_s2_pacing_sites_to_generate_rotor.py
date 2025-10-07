@@ -31,8 +31,7 @@ s2_t = np.argmin(np.abs(t-s2_t_ms))
 
 #%%
 # the manually assigned pacing sites
-s1_pacing_particle_id = np.array([23403, 23409, 23410, 24111, 24112, 24113, 24118, 24119, 24120,
-    24125, 24126, 24127, 24131, 24132, 24791, 24792, 24798, 24799, 24805, 24806, 24807])
+s1_pacing_particle_id = np.array([23403])
 
 n = 0 # time index
 position = xyz[:,n,:]

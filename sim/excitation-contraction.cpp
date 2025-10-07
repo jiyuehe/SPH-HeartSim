@@ -15,8 +15,7 @@ using namespace SPH;
 // settings
 // ------------------------------------------------------------
 int geometry_flag = 2; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
-Real end_time = 500; // simulation time, unit: ms
-int rotor_flag = 1; // 1: apply s2 pacing, 0: do not apply s2 pacing
+Real end_time = 200; // simulation time, unit: ms
 // ------------------------------------------------------------
 
 std::string full_path_to_stl_file;
@@ -420,14 +419,14 @@ int main(int ac, char *av[])
     if (geometry_flag == 1) { // ventricle
         s1_pacing_particle_id = {1, 2, 3, 4, 5};
     } else if (geometry_flag == 2) { // atrium
-        s1_pacing_particle_id = {23403, 23409, 23410, 24111, 24112, 24113, 24118, 24119, 24120,
-                            24125, 24126, 24127, 24131, 24132, 24791, 24792, 24798, 24799,
-                            24805, 24806, 24807};
+        s1_pacing_particle_id = {23403};
     } else if (geometry_flag == 3) { // slab
         s1_pacing_particle_id = {1, 2, 3, 4, 5};
     } else if (geometry_flag == 4) { // rabbit heart
         s1_pacing_particle_id = {24710, 24720, 24721, 24732, 25743, 25744, 25755};
     }
+
+    int rotor_flag = 0; // 1: apply s2 pacing, 0: do not apply s2 pacing
 
     // simulation computation
     double s1_t = 0.0; // ms
@@ -466,7 +465,7 @@ int main(int ac, char *av[])
                 
                 // apply S1 pacing
                 if (physical_time >= s1_t && physical_time <= s1_t + 0.5){
-                    // std::cout << "apply s1 pacing" << std::endl;
+                    std::cout << "apply s1 pacing" << std::endl;
 
                     for (size_t k = 0; k < s1_pacing_particle_id.size(); ++k){
                         size_t pid = s1_pacing_particle_id[k];
@@ -475,7 +474,7 @@ int main(int ac, char *av[])
                 }
 
                 // apply S2 pacing to induce spiral wave
-                if (rotor_flag == 1 && physical_time >= s2_t &&  physical_time <= s2_t + 5){
+                if (rotor_flag == 1 && physical_time >= s2_t &&  physical_time <= s2_t + 5){ 
                     std::cout << "apply s2 pacing" << std::endl;
 
                     // for (size_t k = 0; k < n_particles; ++k) {
