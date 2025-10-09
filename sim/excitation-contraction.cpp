@@ -416,25 +416,20 @@ int main(int ac, char *av[])
     std::cout << "Main Loop Starts Here : " << "\n";
     
     std::vector<long unsigned int> s1_pacing_particle_id = {};
-    if (geometry_flag == 1) { // ventricle
-        s1_pacing_particle_id = {1, 2, 3, 4, 5};
-    } else if (geometry_flag == 2) { // atrium
-        s1_pacing_particle_id = {6743, 6754, 7216, 7227, 7238, 7690};
-    } else if (geometry_flag == 3) { // slab
-        s1_pacing_particle_id = {1, 2, 3, 4, 5};
-    } else if (geometry_flag == 4) { // rabbit heart
-        s1_pacing_particle_id = {24710, 24720, 24721, 24732, 25743, 25744, 25755};
-    }
+    s1_pacing_particle_id = {4665, 4678, 5189, 5191, 5192, 5203, 5204, 5206, 5680, 5681, 5682, 5694, 6197};
 
-    int rotor_flag = 1; // 1: apply s2 pacing, 0: do not apply s2 pacing
+    std::vector<int> s2_pacing_particle_id;
+    s2_pacing_particle_id = {11071, 11082, 11093, 11104, 11562, 11593, 11594, 12047, 12057, 12067, 12088, 12089, 12101, 12511, 12521, 12531, 12541, 12552, 12563, 12574, 12991, 13002, 13012, 13022, 13032, 13043, 13054, 13482, 13491, 13500, 13510, 13520, 13530, 13540, 13983, 13994, 14013, 14024};
+
+    int rotor_flag = 0; // 1: apply s2 pacing, 0: do not apply s2 pacing
 
     // simulation computation
     double s1_t = 0.0; // ms
-    double s2_t = s1_t + 50.0; // ms
-    double ap_min = 0.000479918;
-    double ap_max = 0.947472798;
-    double h_min = 0.082594101;
-    double h_max = 2.402230333;
+    double s2_t = s1_t + 60.0; // ms
+    double ap_min = 0.000811678;
+    double ap_max = 0.047406586;
+    double h_min = 0.090786425;
+    double h_max = 0.870605033;
 
     Real *voltage = physiology_heart.getBaseParticles().getVariableDataByName<Real>("Voltage");
     Real *voltage_prev = physiology_heart.getBaseParticles().registerStateVariable<Real>("Voltage_prev");
@@ -520,9 +515,6 @@ int main(int ac, char *av[])
                     }
                     */
                     
-                    std::vector<int> s2_pacing_particle_id;
-                    s2_pacing_particle_id = {11071, 11082, 11093, 11104, 11562, 11593, 11594, 12047, 12057, 12067, 12088, 12089, 12101, 12511, 12521, 12531, 12541, 12552, 12563, 12574, 12991, 13002, 13012, 13022, 13032, 13043, 13054, 13482, 13491, 13500, 13510, 13520, 13530, 13540, 13983, 13994, 14013, 14024};
-
                     for (size_t k = 0; k < s2_pacing_particle_id.size(); ++k){
                         size_t pid = s2_pacing_particle_id[k];
                         voltage[pid] = 0.92;
