@@ -21,7 +21,7 @@ There are useful codes in the folder "tools".
 
 # Install dependencies
 ------------------------------  
-## Ubuntu
+## Linux: Ubuntu
 sudo apt install libsimbody-dev  
 sudo apt install libeigen3-dev  
 sudo apt install libtbb-dev  
@@ -53,7 +53,7 @@ then choose the compiler in Visual Studio Code:
 Cmd+Shift+P --> CMake: Select a Kit --> /opt/homebrew/opt/llvm/bin/clang++
 
 ------------------------------  
-## Manjaro Linux
+## Linux: Manjaro
 sudo pacman -Syu  
 sudo pacman -S base-devel cmake git python python-pip eigen  
 sudo pacman -S cmake git gcc-fortran  
