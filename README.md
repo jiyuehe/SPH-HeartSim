@@ -3,7 +3,7 @@
 - SPHinXsys is a general-purpose framework that includes numerous demonstration codes for various physical phenomena such as dam breaks, elastic water gates, and heat transfer, as well as a bi-ventricle electromechanical simulation. 
 - I have simplified the codes and retained only the components relevant to electromechanical cardiac simulation. 
 - I have extended the codebase to enable heart simulations on arbitrary geometries, including patient-specific atria and ventricles.
-- The heart simulation code is /sim/excitation-contraction.cpp
+- The heart simulation code is /sim/excitation-contraction.cpp.
 
 Simulation example:  
 <img src="result/0_demo/bi_ventricle_movie.gif" alt="Demo" width="400" />  
