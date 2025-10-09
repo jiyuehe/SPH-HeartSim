@@ -3,6 +3,7 @@
 - SPHinXsys is a general-purpose framework that includes numerous demonstration codes for various physical phenomena such as dam breaks, elastic water gates, and heat transfer, as well as a bi-ventricle electromechanical simulation. 
 - I have simplified the codes and retained only the components relevant to electromechanical cardiac simulation. 
 - I have extended the codebase to enable heart simulations on arbitrary geometries, including patient-specific atria and ventricles.
+- The heart simulation code is /sim/excitation-contraction.cpp
 
 # How to run simulation
 Open terminal in folder /SPH-HeartSim  
@@ -27,7 +28,7 @@ sudo apt install libeigen3-dev
 sudo apt install libtbb-dev  
 sudo apt install libboost-all-dev  
 
-## MacOS (2025 Macbook Air is not be powerful enough to run it)
+## MacOS (2025 Macbook Air is not be powerful enough to build the codes)
 brew install eigen  
 brew install tbb  
 brew install boost  

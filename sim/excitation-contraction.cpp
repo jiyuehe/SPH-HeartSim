@@ -14,8 +14,8 @@ using namespace SPH;
 
 // settings
 // ------------------------------------------------------------
-int geometry_flag = 2; // 1: ventricle, 2: atrium, 3: slab, 4: rabbit heart
-Real end_time = 200; // simulation time, unit: ms
+int geometry_flag = 1; // 1: ideal bi-ventricle, 2: atrium, 3: slab, 4: rabbit heart, 5: ideal bi-ventricle centered at the origin
+Real end_time = 100; // simulation time, unit: ms
 // ------------------------------------------------------------
 
 std::string full_path_to_stl_file;
@@ -74,7 +74,7 @@ class Heart : public ComplexShape
             // (tried to set bounding box and geometry co-centered so no need to translate, but it did not work, thus keeping this original setup)
             translation << -43.273098-10.0, -34.759075-35.0, -32.533287+0.0;
             // translation << 0.0, 0.0, 0.0;
-        } else if (geometry_flag == 2 || geometry_flag == 3 || geometry_flag == 4) {
+        } else if (geometry_flag == 2 || geometry_flag == 3 || geometry_flag == 4 || geometry_flag == 5) {
             // since the geometry is already set to centered in the bounding box, no translation is needed
             translation << 0.0, 0.0, 0.0;
         }
@@ -195,7 +195,7 @@ int main(int ac, char *av[])
     Real space_buffer = 5.0; // space_buffer = 0.0 works well too, it seems no need for space buffer
 
     if (geometry_flag == 1) {
-        full_path_to_stl_file = "./input/heart-new.stl"; // sample ventricle. x = 2.54:83.53, y = 0.0:70.0, z = 2.55:62.59
+        full_path_to_stl_file = "./input/heart-new.stl"; // ideal bi-ventricle. x = 2.54:83.53, y = 0.0:70.0, z = 2.55:62.59
         domain_lower_bound << -55.0, -75.0, -35.0;
         domain_upper_bound << 35.0, 5.0, 35.0;
         // domain_lower_bound << 2.54-space_buffer,0.0-space_buffer, 2.55-space_buffer;
@@ -232,6 +232,11 @@ int main(int ac, char *av[])
                     // 2.0 is too large for the small geometry 
                     // 1.0, 1.5 will result in NaN in simulation 
                     // 0.8 some particle will be NaN
+    } else if (geometry_flag == 5) { // ideal bi-ventricle centered at the origin
+        full_path_to_stl_file = "./input/ideal_bi_ventricle.stl";
+        domain_lower_bound << -40.714302-space_buffer, -34.77151-space_buffer, -29.979214-space_buffer;
+        domain_upper_bound << 40.27483+space_buffer, 35.22849+space_buffer, 30.058975+space_buffer;
+        dp_0 = 2.0;
     }
     BoundingBox system_domain_bounds(domain_lower_bound, domain_upper_bound); // domain bounds of the system
 
@@ -416,7 +421,7 @@ int main(int ac, char *av[])
     std::cout << "Main Loop Starts Here : " << "\n";
     
     std::vector<long unsigned int> s1_pacing_particle_id = {};
-    s1_pacing_particle_id = {4665, 4678, 5189, 5191, 5192, 5203, 5204, 5206, 5680, 5681, 5682, 5694, 6197};
+    s1_pacing_particle_id = {4665};
 
     std::vector<int> s2_pacing_particle_id;
     s2_pacing_particle_id = {11071, 11082, 11093, 11104, 11562, 11593, 11594, 12047, 12057, 12067, 12088, 12089, 12101, 12511, 12521, 12531, 12541, 12552, 12563, 12574, 12991, 13002, 13012, 13022, 13032, 13043, 13054, 13482, 13491, 13500, 13510, 13520, 13530, 13540, 13983, 13994, 14013, 14024};
