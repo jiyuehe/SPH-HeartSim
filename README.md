@@ -1,9 +1,7 @@
 # Introduction
-------------------------------  
 This work is based on the open-source framework SPHinXsys (Smoothed Particle Hydrodynamics for Industrial Complex Systems, https://www.sphinxsys.org). The framework provides numerous demonstration codes for phenomena such as dam breaks, elastic water gates, and heat transfer, as well as a bi-ventricle electromechanical simulation. I have extended the codebase to enable cardiac electromechanical simulations on arbitrary geometries, including patient-specific atria and ventricles.
 
 # How to run simulation
-------------------------------  
 Open terminal in folder /SPH-HeartSim  
 mkdir build && cd build  
 cmake .. -DCMAKE_BUILD_TYPE=Release  
@@ -20,14 +18,12 @@ ParaView can open PhysiologyHeart_0000000000.vtp and play the simulation movie
 There are useful codes in the folder "tools".  
 
 # Install dependencies
-------------------------------  
 ## Linux: Ubuntu
 sudo apt install libsimbody-dev  
 sudo apt install libeigen3-dev  
 sudo apt install libtbb-dev  
 sudo apt install libboost-all-dev  
 
-------------------------------  
 ## MacOS (2025 Macbook Air is not be powerful enough to run it)
 brew install eigen  
 brew install tbb  
@@ -52,7 +48,6 @@ brew install llvm
 then choose the compiler in Visual Studio Code: 
 Cmd+Shift+P --> CMake: Select a Kit --> /opt/homebrew/opt/llvm/bin/clang++
 
-------------------------------  
 ## Linux: Manjaro
 sudo pacman -Syu  
 sudo pacman -S base-devel cmake git python python-pip eigen  
