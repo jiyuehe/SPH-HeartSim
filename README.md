@@ -1,7 +1,3 @@
-![Demo](electromechanical_simulation.gif)
-![Demo](voltage_of_a_particle.png)
-![Demo](stress_of_a_particle.png)
-
 # Introduction
 ------------------------------  
 This work is based on the open-source framework SPHinXsys (Smoothed Particle Hydrodynamics for Industrial Complex Systems, https://www.sphinxsys.org). The framework provides numerous demonstration codes for phenomena such as dam breaks, elastic water gates, and heat transfer, as well as a bi-ventricle electromechanical simulation. I have extended the codebase to enable cardiac electromechanical simulations on arbitrary geometries, including patient-specific atria and ventricles.
