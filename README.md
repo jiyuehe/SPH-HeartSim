@@ -31,6 +31,23 @@ sudo apt install libeigen3-dev
 sudo apt install libtbb-dev  
 sudo apt install libboost-all-dev  
 
+## Linux: Manjaro
+sudo pacman -Syu  
+sudo pacman -S base-devel cmake git python python-pip eigen  
+sudo pacman -S cmake git gcc-fortran  
+sudo pacman -S tbb  
+sudo pacman -S boost-libs  
+
+Install Simbody:  
+cd Desktop  
+git clone https://github.com/simbody/simbody.git  
+cd simbody  
+mkdir build && cd build  
+cmake .. -DCMAKE_BUILD_TYPE=Release  
+make -j$(nproc)  
+sudo make install  
+export CMAKE_PREFIX_PATH=/usr/local  
+
 ## MacOS (2025 Macbook Air is not be powerful enough to build the codes)
 brew install eigen  
 brew install tbb  
@@ -54,20 +71,3 @@ export PATH="/opt/homebrew/opt/ccache/libexec:$PATH"
 brew install llvm
 then choose the compiler in Visual Studio Code: 
 Cmd+Shift+P --> CMake: Select a Kit --> /opt/homebrew/opt/llvm/bin/clang++
-
-## Linux: Manjaro
-sudo pacman -Syu  
-sudo pacman -S base-devel cmake git python python-pip eigen  
-sudo pacman -S cmake git gcc-fortran  
-sudo pacman -S tbb  
-sudo pacman -S boost-libs  
-
-Install Simbody:  
-cd Desktop  
-git clone https://github.com/simbody/simbody.git  
-cd simbody  
-mkdir build && cd build  
-cmake .. -DCMAKE_BUILD_TYPE=Release  
-make -j$(nproc)  
-sudo make install  
-export CMAKE_PREFIX_PATH=/usr/local  
