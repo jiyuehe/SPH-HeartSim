@@ -46,7 +46,7 @@ sudo apt install libtbb-dev
 sudo apt install libboost-all-dev  
 
 ------------------------------  
-## MacOS
+## MacOS (2025 Macbook Air is not be powerful enough to run it)
 brew install eigen  
 brew install tbb  
 brew install boost  
