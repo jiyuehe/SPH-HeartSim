@@ -473,7 +473,7 @@ int main(int ac, char *av[])
     
     std::vector<long unsigned int> s1_pacing_particle_id = {};
     if (geometry_flag == 1) { // ventricle
-        s1_pacing_particle_id = {8262};
+        s1_pacing_particle_id = {8262}; 
     } else if (geometry_flag == 2) { // atrium
         s1_pacing_particle_id = {23403, 23409, 23410, 24111, 24112, 24113, 24118, 24119, 24120,
                             24125, 24126, 24127, 24131, 24132, 24791, 24792, 24798, 24799,
