@@ -14,7 +14,7 @@ using namespace SPH;
 
 // settings
 // ------------------------------------------------------------
-int geometry_flag = 1; // 1: ideal bi-ventricle, 2: atrium, 3: slab, 4: rabbit heart, 5: ideal bi-ventricle centered at the origin
+int geometry_flag = 2; // 1: ideal bi-ventricle, 2: atrium, 3: slab, 4: rabbit heart, 5: ideal bi-ventricle centered at the origin
 Real end_time = 300; // simulation time, unit: ms
 // ------------------------------------------------------------
 
@@ -228,6 +228,8 @@ std::vector<std::vector<size_t>> find_nearest_neighbors(
 
 int main(int ac, char *av[])
 {
+    int debug_display = 0;
+
     Real space_buffer = 5.0; // space_buffer = 0.0 works well too, it seems no need for space buffer
 
     if (geometry_flag == 1) {
@@ -462,22 +464,23 @@ int main(int ac, char *av[])
     std::vector<std::vector<size_t>> neighbor_id_2d = find_nearest_neighbors(node, n_particles, n_neighbors);
 
     // print for verification
-    // std::cout << "Neighbor check (first 5 particles):\n";
-    // for (size_t i = 0; i < 5 && i < n_particles; ++i) {
-    //     std::cout << "  Particle " << i << " neighbors: ";
-    //     for (size_t neighbor_idx : neighbor_id_2d[i]) {
-    //         std::cout << neighbor_idx << " ";
-    //     }
-    //     std::cout << "\n";
-    // }
-    
+    debug_display = 0;
+    if (debug_display == 1) {
+        std::cout << "Neighbor check (first 5 particles):\n";
+        for (size_t i = 0; i < 5 && i < n_particles; ++i) {
+            std::cout << "  Particle " << i << " neighbors: ";
+            for (size_t neighbor_idx : neighbor_id_2d[i]) {
+                std::cout << neighbor_idx << " ";
+            }
+            std::cout << "\n";
+        }
+    }
+
     std::vector<long unsigned int> s1_pacing_particle_id = {};
     if (geometry_flag == 1) { // ventricle
-        s1_pacing_particle_id = {8262}; 
+        s1_pacing_particle_id = {8262}; // assign a particle id, it will be the s1 pacing site
     } else if (geometry_flag == 2) { // atrium
-        s1_pacing_particle_id = {23403, 23409, 23410, 24111, 24112, 24113, 24118, 24119, 24120,
-                            24125, 24126, 24127, 24131, 24132, 24791, 24792, 24798, 24799,
-                            24805, 24806, 24807};
+        s1_pacing_particle_id = {23403};
     } else if (geometry_flag == 3) { // slab
         s1_pacing_particle_id = {1, 2, 3, 4, 5};
     } else if (geometry_flag == 4) { // rabbit heart
@@ -499,7 +502,6 @@ int main(int ac, char *av[])
     Real *h_prev = physiology_heart.getBaseParticles().registerStateVariable<Real>("h_prev");
 
     int rotor_flag = 1;
-    int debug_display = 1;
     while (physical_time < end_time)
     {
         for (size_t i = 0; i < n_particles; ++i) voltage_prev[i] = voltage[i]; // assign the previous value
