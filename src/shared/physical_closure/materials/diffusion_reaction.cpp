@@ -113,7 +113,7 @@ void LocalDirectionalDiffusion::initializeLocalParameters(BaseParticles *base_pa
             return inverseCholeskyDecomposition(diff_i);
         });
 
-    std::cout << "\n Local diffusion parameters setup finished " << std::endl;
+    std::cout << "Local diffusion parameters setup finished \n" << std::endl;
 };
 //=================================================================================================//
 } // namespace SPH
