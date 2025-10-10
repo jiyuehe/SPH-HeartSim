@@ -15,7 +15,7 @@ using namespace SPH;
 // settings
 // ------------------------------------------------------------
 int geometry_flag = 2; // 1: ideal bi-ventricle, 2: atrium, 3: slab, 4: rabbit heart, 5: ideal bi-ventricle centered at the origin
-Real end_time = 300; // simulation time, unit: ms
+Real end_time = 500; // simulation time, unit: ms
 // ------------------------------------------------------------
 
 std::string full_path_to_stl_file;
