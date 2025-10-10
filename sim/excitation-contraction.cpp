@@ -153,7 +153,7 @@ class ComputeFiberAndSheetDirections : public LocalDynamics
         Vec3d center_norm = pos_[index_i] / (pos_[index_i].norm() + 1.0e-15);
         if (face_norm.dot(center_norm) <= 0.0)
         {
-            face_norm = -face_norm;
+            face_norm = -face_norm; 
         }
         // Compute the centerline's projection on the plane orthogonal to face norm
         Vec3d circumferential_direction = getCrossProduct(center_line_vector_, face_norm);
