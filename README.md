@@ -6,10 +6,10 @@
 - The heart simulation code is /sim/excitation-contraction.cpp.
 
 Simulation example: bi-ventricle  
-<img src="result/0_demo/bi_ventricle_movie.gif" alt="Demo" width="400" />  
+<img src="result/0_demo/bi_ventricle_rotor_1.gif" alt="Demo" width="400" />  
 
 Simulation example: real patient left atrium  
-<img src="result/0_demo/atrium rotor.gif" alt="Demo" width="400" />  
+<img src="result/0_demo/atrium_rotor.gif" alt="Demo" width="400" />  
 
 # How to run simulation
 Open terminal in folder /SPH-HeartSim  
