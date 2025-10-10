@@ -15,7 +15,8 @@ using namespace SPH;
 // settings
 // ------------------------------------------------------------
 int geometry_flag = 2; // 1: ideal bi-ventricle, 2: atrium, 3: slab, 4: rabbit heart, 5: ideal bi-ventricle centered at the origin
-Real end_time = 500; // simulation time, unit: ms
+Real end_time = 500; // simulation time, unit: ms. 
+// The simulation saving function has bug: if simulation time is too long (about > 2000 ms), it will create file name with negative number (PhysiologyHeart_-2147483648.vtp) and stop saving.
 // ------------------------------------------------------------
 
 std::string full_path_to_stl_file;
