@@ -518,10 +518,8 @@ int main(int ac, char *av[])
             {
                 if (ite % screen_output_interval == 0)
                 {
-                    std::cout << std::fixed << std::setprecision(9) << "N=" << ite << "	Time = "
-                              << physical_time
-                              << "	dt = " << dt
-                              << "	dt_s = " << dt_s << "\n";
+                    std::cout << std::fixed << std::setprecision(9) << "N=" << ite << "	Time = " << physical_time
+                        << "	dt = " << dt << "	dt_s = " << dt_s << "\n";
                 }
                 
                 // apply S1 pacing
