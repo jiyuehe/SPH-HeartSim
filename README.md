@@ -5,8 +5,11 @@
 - I have extended the codebase to enable heart simulations on arbitrary geometries, including patient-specific atria and ventricles.
 - The heart simulation code is /sim/excitation-contraction.cpp.
 
-Simulation example:  
+Simulation example: bi-ventricle  
 <img src="result/0_demo/bi_ventricle_movie.gif" alt="Demo" width="400" />  
+
+Simulation example: real patient left atrium  
+<img src="result/0_demo/atrium rotor.gif" alt="Demo" width="400" />  
 
 # How to run simulation
 Open terminal in folder /SPH-HeartSim  
